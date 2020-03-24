@@ -2,6 +2,8 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+
 // ReSharper disable ArrangeTypeMemberModifiers
 // ReSharper disable ArrangeTypeModifiers
 
@@ -126,7 +128,8 @@ namespace mc
         BadToken,
         EofToken,
         NumberExpression,
-        BinaryExpression
+        BinaryExpression,
+        ParenthesizedExpression
     }
 
     class SyntaxToken : SyntaxNode
@@ -293,6 +296,28 @@ namespace mc
         public ExpressionSyntax Right { get; }
     }
 
+    sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
+    {
+        public ParenthesizedExpressionSyntax(SyntaxToken openParensToken, ExpressionSyntax expression, SyntaxToken closeParensToken)
+        {
+            OpenParensToken = openParensToken;
+            Expression = expression;
+            CloseParensToken = closeParensToken;
+        }
+
+        public SyntaxToken OpenParensToken { get; }
+        public ExpressionSyntax Expression { get; }
+        public SyntaxToken CloseParensToken { get; }
+
+        public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
+        public override IEnumerable<SyntaxNode> GetChildren()
+        {
+            yield return OpenParensToken;
+            yield return Expression;
+            yield return CloseParensToken;
+        }
+    }
+
     sealed class SyntaxTree
     {
         public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken eofToken)
@@ -311,10 +336,10 @@ namespace mc
     {
         private readonly SyntaxToken[] _tokens;
         private int _position;
-        private readonly List<string> _diagnostics = new List<string>();
 
         public Parser(string text)
         {
+            Diagnostics = new List<string>();
             var lexer = new Lexer(text);
             SyntaxToken token;
 
@@ -332,7 +357,7 @@ namespace mc
             } while (token.Kind != SyntaxKind.EofToken);
 
             _tokens = tokens.ToArray();
-            _diagnostics.AddRange(lexer.Diagnostics);
+            Diagnostics.AddRange(lexer.Diagnostics);
         }
 
         private SyntaxToken Peek(int offset)
@@ -343,7 +368,7 @@ namespace mc
         }
 
         private SyntaxToken Current => Peek(0);
-        public List<string> Diagnostics => _diagnostics;
+        public List<string> Diagnostics { get; }
 
         private SyntaxToken NextToken()
         {
@@ -359,8 +384,13 @@ namespace mc
                 return NextToken();
             }
 
-            _diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}>, expected <{kind}>");
+            Diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}>, expected <{kind}>");
             return new SyntaxToken(kind, Current.Position, null, null);
+        }
+
+        private ExpressionSyntax ParseExpression()
+        {
+            return ParseTerm();
         }
 
         public SyntaxTree Parse()
@@ -368,7 +398,7 @@ namespace mc
             var expression = ParseTerm();
             var eofToken = Match(SyntaxKind.EofToken);
 
-            return new SyntaxTree(_diagnostics, expression, eofToken);
+            return new SyntaxTree(Diagnostics, expression, eofToken);
         }
 
         private ExpressionSyntax ParseTerm()
@@ -405,6 +435,15 @@ namespace mc
 
         private ExpressionSyntax ParsePrimaryExpression()
         {
+            if (Current.Kind == SyntaxKind.OpenParensToken)
+            {
+                var left = NextToken();
+                var expression = ParseExpression();
+                var right = Match(SyntaxKind.CloseParensToken);
+
+                return new ParenthesizedExpressionSyntax(left, expression, right);
+            }
+
             var numberToken = Match(SyntaxKind.NumberToken);
             return new NumberExpressionSyntax(numberToken);
         }
@@ -452,6 +491,8 @@ namespace mc
                             throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
                     }
                 }
+                case ParenthesizedExpressionSyntax p:
+                    return EvaluateExpression(p.Expression);
                 default:
                     throw new Exception($"Unexpected node {node.Kind}");
             }
