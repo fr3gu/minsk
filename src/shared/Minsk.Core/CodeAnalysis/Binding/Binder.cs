@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Minsk.Core.CodeAnalysis.Syntax;
 
 namespace Minsk.Core.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
-        private readonly Dictionary<string, object> _variables;
+        private readonly Dictionary<VariableSymbol, object> _variables;
         public DiagnosticsBag Diagnostics { get; }
 
-        public Binder(Dictionary<string, object> variables)
+        public Binder(Dictionary<VariableSymbol, object> variables)
         {
             _variables = variables;
             Diagnostics = new DiagnosticsBag();
@@ -40,27 +41,36 @@ namespace Minsk.Core.CodeAnalysis.Binding
         {
             var name = syntax.IdentifierToken.Text;
             var boundExpression = BindExpression(syntax.Expression);
-            return new BoundAssignmentExpression(name, boundExpression);
 
+            var existingVariable = _variables.Keys.FirstOrDefault(v => v.Name == name);
+            if (existingVariable != null)
+            {
+                _variables.Remove(existingVariable);
+            }
+
+            var variable = new VariableSymbol(name, boundExpression.Type);
+            _variables[variable] = null;
+
+            return new BoundAssignmentExpression(variable, boundExpression);
         }
 
         private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
         {
             var name = syntax.IdentifierToken.Text;
-            if (!_variables.TryGetValue(name, out var value))
+            var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
+
+            if (variable == null)
             {
                 Diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
                 return new BoundLiteralExpression(0);
             }
 
-            var type = typeof(int);
-
-            return BindVariableExpression(name, type);
+            return BindVariableExpression(variable);
         }
 
-        private BoundExpression BindVariableExpression(string name, Type type)
+        private BoundExpression BindVariableExpression(VariableSymbol variable)
         {
-            return new BoundVariableExpression(name, type);
+            return new BoundVariableExpression(variable);
         }
 
         private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
@@ -79,7 +89,8 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var boundOperand = BindExpression(syntax.Operand);
             var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
 
-            if (boundOperator != null) return new BoundUnaryExpression(boundOperator, boundOperand);
+            if (boundOperator != null)
+                return new BoundUnaryExpression(boundOperator, boundOperand);
 
             Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
             return boundOperand;
@@ -92,7 +103,8 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var boundRight = BindExpression(syntax.Right);
             var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
 
-            if (boundOperator != null) return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
+            if (boundOperator != null)
+                return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
 
             Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
             return boundLeft;
