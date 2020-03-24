@@ -55,7 +55,7 @@ namespace mc.CodeAnalysis.Syntax
                 return NextToken();
             }
 
-            Diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}>, expected <{kind}>");
+            Diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}> on position {_position}, expected <{kind}>");
             return new SyntaxToken(kind, Current.Position, null, null);
         }
 

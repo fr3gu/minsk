@@ -14,8 +14,8 @@
         OpenParensToken,
         CloseParensToken,
         BangToken,
-        AndAlsoToken,
-        OrElseToken,
+        AmpersandAmpersandToken,
+        PipePipeToken,
         Identifier,
 
         // Expressions

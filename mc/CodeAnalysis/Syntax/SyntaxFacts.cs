@@ -12,9 +12,9 @@
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
                     return 3;
-                case SyntaxKind.AndAlsoToken:
+                case SyntaxKind.AmpersandAmpersandToken:
                     return 2;
-                case SyntaxKind.OrElseToken:
+                case SyntaxKind.PipePipeToken:
                     return 1;
                 default:
                     return 0;

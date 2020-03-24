@@ -98,13 +98,13 @@ namespace mc.CodeAnalysis.Syntax
                 case '&':
                     if(LookAhead == '&')
                     {
-                        return new SyntaxToken(SyntaxKind.AndAlsoToken, _position += 2, "&&", null);
+                        return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position += 2, "&&", null);
                     }
                     break;
                 case '|':
                     if (LookAhead == '|')
                     {
-                        return new SyntaxToken(SyntaxKind.OrElseToken, _position += 2, "||", null);
+                        return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
                     }
                     break;
 
