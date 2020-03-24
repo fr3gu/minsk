@@ -10,10 +10,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
         public Lexer(string text)
         {
             _text = text;
-            Diagnostics = new List<string>();
+            Diagnostics = new DiagnosticsBag();
         }
 
-        public List<string> Diagnostics { get; }
+        public DiagnosticsBag Diagnostics { get; }
 
         private char Current => Peek(0);
         private char LookAhead => Peek(1);
@@ -48,7 +48,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
                 if (!int.TryParse(text, out var value))
                 {
-                    Diagnostics.Add($"The number {_text} cannot be represented an Int32");
+                    Diagnostics.ReportInvalidNumber(new TextSpan(start, length), _text, typeof(int));
                 }
 
                 return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
@@ -119,7 +119,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                         new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
             }
 
-            Diagnostics.Add($"ERROR: Bad character input: '{Current}'");
+            Diagnostics.ReportBadCharacter(_position, Current);
             return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
         }
     }

@@ -6,11 +6,11 @@ namespace Minsk.Core.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
-        public List<string> Diagnostics { get; }
+        public DiagnosticsBag Diagnostics { get; }
 
         public Binder()
         {
-            Diagnostics = new List<string>();
+            Diagnostics = new DiagnosticsBag();
         }
 
         public BoundExpression BindExpression(ExpressionSyntax syntax)
@@ -43,7 +43,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
 
             if (boundOperator != null) return new BoundUnaryExpression(boundOperator, boundOperand);
 
-            Diagnostics.Add($"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}");
+            Diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
             return boundOperand;
 
         }
@@ -56,7 +56,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
 
             if (boundOperator != null) return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
 
-            Diagnostics.Add($"Binary operator '{syntax.OperatorToken.Text}' is not defined for type {boundLeft.Type} and {boundRight.Type}");
+            Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
             return boundLeft;
 
         }

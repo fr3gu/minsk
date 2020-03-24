@@ -10,7 +10,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
         public Parser(string text)
         {
-            Diagnostics = new List<string>();
+            Diagnostics = new DiagnosticsBag();
             var lexer = new Lexer(text);
             SyntaxToken token;
 
@@ -28,6 +28,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             } while (token.Kind != SyntaxKind.EofToken);
 
             _tokens = tokens.ToArray();
+
             Diagnostics.AddRange(lexer.Diagnostics);
         }
 
@@ -39,7 +40,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
         }
 
         private SyntaxToken Current => Peek(0);
-        public List<string> Diagnostics { get; }
+        public DiagnosticsBag Diagnostics { get; }
 
         private SyntaxToken NextToken()
         {
@@ -55,7 +56,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 return NextToken();
             }
 
-            Diagnostics.Add($"ERROR: Unexpected token <{Current.Kind}> on position {_position}, expected <{kind}>");
+            Diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, kind);
             return new SyntaxToken(kind, Current.Position, null, null);
         }
 
