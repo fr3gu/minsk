@@ -58,14 +58,29 @@ namespace Minsk.ConsoleApp
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
 
                     foreach (var entry in diagnostics)
                     {
+                        Console.WriteLine();
+
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(entry);
+                        Console.ResetColor();
+
+                        var prefix = line.Substring(0, entry.Span.Start);
+                        var error = line.Substring(entry.Span.Start, entry.Span.Length);
+                        var suffix = line.Substring(entry.Span.End);
+
+                        Console.Write("    ");
+                        Console.Write(prefix);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write(error);
+                        Console.ResetColor();
+                        Console.Write(suffix);
+                        Console.WriteLine();
                     }
 
-                    Console.ForegroundColor = color;
+                    Console.WriteLine();
                 }
             }
         }

@@ -36,12 +36,11 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 return new SyntaxToken(SyntaxKind.EofToken, _position, "\0", null);
             }
 
+            var start = _position;
+
             if (char.IsDigit(Current))
             {
-                var start = _position;
-
-                while (char.IsDigit(Current))
-                    Next();
+                while (char.IsDigit(Current)) Next();
 
                 var length = _position - start;
                 var text = _text.Substring(start, length);
@@ -56,10 +55,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
             if (char.IsWhiteSpace(Current))
             {
-                var start = _position;
-
-                while (char.IsWhiteSpace(Current))
-                    Next();
+                while (char.IsWhiteSpace(Current)) Next();
 
                 var length = _position - start;
                 var text = _text.Substring(start, length);
@@ -69,10 +65,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
             if (char.IsLetter(Current))
             {
-                var start = _position;
-
-                while (char.IsLetter(Current))
-                    Next();
+                while (char.IsLetter(Current)) Next();
 
                 var lenght = _position - start;
                 var text = _text.Substring(start, lenght);
@@ -98,25 +91,35 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 case '&':
                     if (LookAhead == '&')
                     {
-                        return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position += 2, "&&", null);
+                        _position += 2;
+                        return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, "&&", null);
                     }
                     break;
                 case '|':
                     if (LookAhead == '|')
                     {
-                        return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
+                        _position += 2;
+                        return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
                     }
                     break;
                 case '=':
                     if (LookAhead == '=')
                     {
-                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position += 2, "==", null);
+                        _position += 2;
+                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, "==", null);
                     }
                     break;
                 case '!':
-                    return LookAhead == '=' ?
-                        new SyntaxToken(SyntaxKind.BangEqualsToken, _position += 2, "!=", null) :
-                        new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
+                    if (LookAhead == '=')
+                    {
+                        _position += 2;
+                        return new SyntaxToken(SyntaxKind.BangEqualsToken, start, "!=", null);
+                    }
+                    else
+                    {
+                        _position++;
+                        return new SyntaxToken(SyntaxKind.BangToken, start, "!", null);
+                    }
             }
 
             Diagnostics.ReportBadCharacter(_position, Current);
