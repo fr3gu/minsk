@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Minsk.Core.CodeAnalysis;
 using Minsk.Core.CodeAnalysis.Syntax;
@@ -11,6 +12,7 @@ namespace Minsk.ConsoleApp
         private static void Main()
         {
             var showTree = false;
+            var variables = new Dictionary<string, object>();
 
             while(true)
             {
@@ -41,7 +43,7 @@ namespace Minsk.ConsoleApp
 
                 var syntaxTree = SyntaxTree.Parse(line);
                 var compilation = new Compilation(syntaxTree);
-                var result = compilation.Evaluate();
+                var result = compilation.Evaluate(variables);
 
                 var diagnostics = result.Diagnostics.ToArray();
 

@@ -66,5 +66,11 @@ namespace Minsk.Core.CodeAnalysis
             var message = $"Binary operator '{operatorText}' is not defined for type {leftOperandType} and {rightOperandType}";
             Report(span, message);
         }
+
+        public void ReportUndefinedName(TextSpan span, string name)
+        {
+            var message = $"smurf {name} is missing";
+            Report(span, message);
+        }
     }
 }

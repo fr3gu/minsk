@@ -18,13 +18,16 @@
         PipePipeToken,
         EqualsEqualsToken,
         BangEqualsToken,
-        Identifier,
+        EqualsToken,
+        IdentifierToken,
 
         // Expressions
         LiteralExpression,
         BinaryExpression,
         ParenthesizedExpression,
         UnaryExpression,
+        NameExpression,
+        AssignmentExpression,
 
         // Keywords
         FalseKeyword,

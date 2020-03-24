@@ -46,7 +46,7 @@
                 case "false":
                     return SyntaxKind.FalseKeyword;
                 default:
-                    return SyntaxKind.Identifier;
+                    return SyntaxKind.IdentifierToken;
             }
         }
     }

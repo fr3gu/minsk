@@ -2,7 +2,7 @@
 
 namespace Minsk.Core.CodeAnalysis.Binding
 {
-    internal sealed  class BoundLiteralExpression : BoundExpression
+    internal sealed class BoundLiteralExpression : BoundExpression
     {
         public BoundLiteralExpression(object value)
         {

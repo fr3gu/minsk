@@ -6,10 +6,12 @@ namespace Minsk.Core.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
+        private readonly Dictionary<string, object> _variables;
         public DiagnosticsBag Diagnostics { get; }
 
-        public Binder()
+        public Binder(Dictionary<string, object> variables)
         {
+            _variables = variables;
             Diagnostics = new DiagnosticsBag();
         }
 
@@ -34,6 +36,32 @@ namespace Minsk.Core.CodeAnalysis.Binding
             }
         }
 
+        private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
+        {
+            var name = syntax.IdentifierToken.Text;
+            var boundExpression = BindExpression(syntax.Expression);
+            return new BoundAssignmentExpression(name, boundExpression);
+
+        }
+
+        private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+        {
+            var name = syntax.IdentifierToken.Text;
+            if (!_variables.TryGetValue(name, out var value))
+            {
+                Diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+                return new BoundLiteralExpression(0);
+            }
+
+            var type = typeof(int);
+
+            return BindVariableExpression(name, type);
+        }
+
+        private BoundExpression BindVariableExpression(string name, Type type)
+        {
+            return new BoundVariableExpression(name, type);
+        }
 
         private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
         {
