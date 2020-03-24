@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace mc.CodeAnalysis
 {
@@ -66,42 +67,77 @@ namespace mc.CodeAnalysis
             return new SyntaxTree(Diagnostics, expression, eofToken);
         }
 
-        private ExpressionSyntax ParseExpression()
-        {
-            return ParseTerm();
-        }
+        //private ExpressionSyntax ParseExpression()
+        //{
+        //    return ParseTerm();
+        //}
 
-        private ExpressionSyntax ParseTerm()
-        {
-            var left = ParseFactor();
-
-            while (Current.Kind == SyntaxKind.PlusToken ||
-                   Current.Kind == SyntaxKind.MinusToken ||
-                   Current.Kind == SyntaxKind.StarToken ||
-                   Current.Kind == SyntaxKind.SlashToken)
-            {
-                var operatorToken = NextToken();
-                var right = ParseFactor();
-                left = new BinaryExpressionSyntax(left, operatorToken, right);
-            }
-
-            return left;
-        }
-
-        private ExpressionSyntax ParseFactor()
+        private ExpressionSyntax ParseExpression(int parentPrecedence = 0)
         {
             var left = ParsePrimaryExpression();
 
-            while (Current.Kind == SyntaxKind.StarToken ||
-                   Current.Kind == SyntaxKind.SlashToken)
+            while (true)
             {
+                var precedence = GetBinaryOperatorPrecedence(Current.Kind);
+
+                if (precedence == 0 || precedence <= parentPrecedence) break;
+
                 var operatorToken = NextToken();
-                var right = ParsePrimaryExpression();
+
+                var right = ParseExpression(precedence);
+
                 left = new BinaryExpressionSyntax(left, operatorToken, right);
             }
 
             return left;
         }
+
+        private static int GetBinaryOperatorPrecedence(SyntaxKind kind)
+        {
+            switch(kind)
+            {
+                case SyntaxKind.StarToken:
+                case SyntaxKind.SlashToken:
+                    return 2;
+                case SyntaxKind.PlusToken:
+                case SyntaxKind.MinusToken:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
+
+        //private ExpressionSyntax ParseTerm()
+        //{
+        //    var left = ParseFactor();
+
+        //    while (Current.Kind == SyntaxKind.PlusToken ||
+        //           Current.Kind == SyntaxKind.MinusToken ||
+        //           Current.Kind == SyntaxKind.StarToken ||
+        //           Current.Kind == SyntaxKind.SlashToken)
+        //    {
+        //        var operatorToken = NextToken();
+        //        var right = ParseFactor();
+        //        left = new BinaryExpressionSyntax(left, operatorToken, right);
+        //    }
+
+        //    return left;
+        //}
+
+        //private ExpressionSyntax ParseFactor()
+        //{
+        //    var left = ParsePrimaryExpression();
+
+        //    while (Current.Kind == SyntaxKind.StarToken ||
+        //           Current.Kind == SyntaxKind.SlashToken)
+        //    {
+        //        var operatorToken = NextToken();
+        //        var right = ParsePrimaryExpression();
+        //        left = new BinaryExpressionSyntax(left, operatorToken, right);
+        //    }
+
+        //    return left;
+        //}
 
         private ExpressionSyntax ParsePrimaryExpression()
         {
