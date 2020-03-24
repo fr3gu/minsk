@@ -1,51 +1,72 @@
 ﻿using System;
+using mc.CodeAnalysis.Binding;
 
 namespace mc.CodeAnalysis
 {
-    internal class Evaluator
+    internal sealed class Evaluator
     {
-        private readonly ExpressionSyntax _root;
+        private readonly BoundExpression _root;
 
-        public Evaluator(ExpressionSyntax root)
+        public Evaluator(BoundExpression root)
         {
             _root = root;
         }
 
-        public int Evaluate()
+        public object Evaluate()
         {
             return EvaluateExpression(_root);
         }
 
-        private int EvaluateExpression(ExpressionSyntax node)
+        private object EvaluateExpression(BoundExpression node)
         {
-            // BinaryExpression
-            // NumberExpression
 
             switch (node)
             {
-                case NumberExpressionSyntax n:
-                    return (int) n.NumberToken.Value;
-                case BinaryExpressionSyntax b:
-                {
-                    var left = EvaluateExpression(b.Left);
-                    var right = EvaluateExpression(b.Right);
-
-                    switch (b.OperatorToken.Kind)
+                case BoundLiteralExpression n:
+                    return n.Value;
+                case BoundUnaryExpression u:
                     {
-                        case SyntaxKind.PlusToken:
-                            return left + right;
-                        case SyntaxKind.MinusToken:
-                            return left - right;
-                        case SyntaxKind.StarToken:
-                            return left * right;
-                        case SyntaxKind.SlashToken:
-                            return left / right;
-                        default:
-                            throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
+                        var operand = EvaluateExpression(u.Operand);
+
+                        switch (u.Op.Kind)
+                        {
+                            case BoundUnaryOperatorKind.Identity:
+                                return (int)operand;
+                            case BoundUnaryOperatorKind.Negation:
+                                return -(int)operand;
+                            case BoundUnaryOperatorKind.LogicalNegation:
+                                return !(bool) operand;
+                            default:
+                                throw new Exception($"Unexpected unary operator {u.Op}");
+                        }
                     }
-                }
-                case ParenthesizedExpressionSyntax p:
-                    return EvaluateExpression(p.Expression);
+                case BoundBinaryExpression b:
+                    {
+                        var left = EvaluateExpression(b.Left);
+                        var right = EvaluateExpression(b.Right);
+
+                        switch (b.Op.Kind)
+                        {
+                            case BoundBinaryOperatorKind.Addition:
+                                return (int)left + (int)right;
+                            case BoundBinaryOperatorKind.Subtraction:
+                                return (int)left - (int)right;
+                            case BoundBinaryOperatorKind.Multiplication:
+                                return (int)left * (int)right;
+                            case BoundBinaryOperatorKind.Division:
+                                return (int)left / (int)right;
+                            case BoundBinaryOperatorKind.LogicalAndAlso:
+                                return (bool)left && (bool)right;
+                            case BoundBinaryOperatorKind.LogicalOrElse:
+                                return (bool)left || (bool)right;
+                            case BoundBinaryOperatorKind.Equals:
+                                return Equals(left, right);
+                            case BoundBinaryOperatorKind.NotEquals:
+                                return !Equals(left, right);
+                            default:
+                                throw new Exception($"Unexpected binary operator {b.Op}");
+                        }
+                    }
                 default:
                     throw new Exception($"Unexpected node {node.Kind}");
             }

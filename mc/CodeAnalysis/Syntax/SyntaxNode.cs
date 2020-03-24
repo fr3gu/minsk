@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace mc.CodeAnalysis
+namespace mc.CodeAnalysis.Syntax
 {
-    internal abstract class SyntaxNode
+    public abstract class SyntaxNode
     {
         public abstract SyntaxKind Kind { get; }
 

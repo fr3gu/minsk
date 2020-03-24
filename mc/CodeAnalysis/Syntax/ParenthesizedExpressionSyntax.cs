@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace mc.CodeAnalysis
+namespace mc.CodeAnalysis.Syntax
 {
-    internal sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
+    public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
     {
         public ParenthesizedExpressionSyntax(SyntaxToken openParensToken, ExpressionSyntax expression, SyntaxToken closeParensToken)
         {
