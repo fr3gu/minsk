@@ -2,7 +2,7 @@
 
 namespace mc.CodeAnalysis
 {
-    internal class Evaluator
+    public sealed class Evaluator
     {
         private readonly ExpressionSyntax _root;
 
@@ -23,8 +23,8 @@ namespace mc.CodeAnalysis
 
             switch (node)
             {
-                case NumberExpressionSyntax n:
-                    return (int) n.NumberToken.Value;
+                case LiteralExpressionSyntax n:
+                    return (int) n.LiteralToken.Value;
                 case BinaryExpressionSyntax b:
                 {
                     var left = EvaluateExpression(b.Left);

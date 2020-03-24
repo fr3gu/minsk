@@ -23,9 +23,9 @@ namespace mc
     //    2   3
     //
 
-    public class Program
+    internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             var showTree = false;
 
@@ -82,21 +82,6 @@ namespace mc
 
                     Console.ForegroundColor = color;
                 }
-
-
-                //var lexer = new Lexer(line);
-                //while (true)
-                //{
-                //    var token = lexer.NextToken();
-
-                //    if (token.Kind == SyntaxKind.EofToken) break;
-
-                //    Console.Write($"{token.Kind}: '{token.Text}'");
-
-                //    if(token.Value != null) Console.Write($" ({token.Value})");
-
-                //    Console.WriteLine();
-                //}
             }
         }
 

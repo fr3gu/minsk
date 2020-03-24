@@ -1,17 +1,19 @@
 ﻿namespace mc.CodeAnalysis
 {
-    internal enum SyntaxKind
+    public enum SyntaxKind
     {
-        NumberToken,
+        // Tokens
+        BadToken,
+        EofToken,
         WhitespaceToken,
+        NumberToken,
         PlusToken,
         MinusToken,
         StarToken,
         SlashToken,
         OpenParensToken,
         CloseParensToken,
-        BadToken,
-        EofToken,
+        // Expressions
         NumberExpression,
         BinaryExpression,
         ParenthesizedExpression
