@@ -40,7 +40,8 @@ namespace mc.CodeAnalysis.Syntax
             {
                 var start = _position;
 
-                while (char.IsDigit(Current)) Next();
+                while (char.IsDigit(Current))
+                    Next();
 
                 var length = _position - start;
                 var text = _text.Substring(start, length);
@@ -70,7 +71,8 @@ namespace mc.CodeAnalysis.Syntax
             {
                 var start = _position;
 
-                while (char.IsLetter(Current)) Next();
+                while (char.IsLetter(Current))
+                    Next();
 
                 var lenght = _position - start;
                 var text = _text.Substring(start, lenght);
@@ -93,10 +95,8 @@ namespace mc.CodeAnalysis.Syntax
                     return new SyntaxToken(SyntaxKind.OpenParensToken, _position++, "(", null);
                 case ')':
                     return new SyntaxToken(SyntaxKind.CloseParensToken, _position++, ")", null);
-                case '!':
-                    return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
                 case '&':
-                    if(LookAhead == '&')
+                    if (LookAhead == '&')
                     {
                         return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position += 2, "&&", null);
                     }
@@ -107,7 +107,16 @@ namespace mc.CodeAnalysis.Syntax
                         return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
                     }
                     break;
-
+                case '=':
+                    if (LookAhead == '=')
+                    {
+                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position += 2, "==", null);
+                    }
+                    break;
+                case '!':
+                    return LookAhead == '=' ?
+                        new SyntaxToken(SyntaxKind.BangEqualsToken, _position += 2, "!=", null) :
+                        new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
             }
 
             Diagnostics.Add($"ERROR: Bad character input: '{Current}'");

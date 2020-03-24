@@ -10,10 +10,15 @@ namespace mc.CodeAnalysis.Binding
         public BoundBinaryOperatorKind Kind { get; }
         public Type LeftType { get; }
         public Type RightType { get; }
-        public Type ResultType { get; }
+        public Type Type { get; }
 
         public BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type type) :
-            this(syntaxKind, kind, type, type, type)
+            this(syntaxKind, kind, type, type)
+        {
+        }
+
+        public BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Type type, Type resultType) :
+            this(syntaxKind, kind, type, type, resultType)
         {
         }
 
@@ -23,15 +28,19 @@ namespace mc.CodeAnalysis.Binding
             Kind = kind;
             LeftType = leftType;
             RightType = rightType;
-            ResultType = resultType;
+            Type = resultType;
         }
 
-        private static BoundBinaryOperator[] _operators =
+        private static readonly BoundBinaryOperator[] _operators =
         {
             new BoundBinaryOperator(SyntaxKind.PlusToken, BoundBinaryOperatorKind.Addition, typeof(int)),
             new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, typeof(int)),
             new BoundBinaryOperator(SyntaxKind.StarToken, BoundBinaryOperatorKind.Multiplication, typeof(int)),
             new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, typeof(int)),
+
+            new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, typeof(int), typeof(bool)),
+            new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.NotEquals, typeof(int), typeof(bool)),
+
             new BoundBinaryOperator(SyntaxKind.AmpersandAmpersandToken, BoundBinaryOperatorKind.LogicalAndAlso, typeof(bool)),
             new BoundBinaryOperator(SyntaxKind.PipePipeToken, BoundBinaryOperatorKind.LogicalOrElse, typeof(bool)),
         };

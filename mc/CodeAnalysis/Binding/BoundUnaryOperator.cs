@@ -9,9 +9,9 @@ namespace mc.CodeAnalysis.Binding
         public SyntaxKind SyntaxKind { get; }
         public BoundUnaryOperatorKind Kind { get; }
         public Type OperandType { get; }
-        public Type ResultType { get; }
+        public Type Type { get; }
 
-        public BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operandType) : 
+        public BoundUnaryOperator(SyntaxKind syntaxKind, BoundUnaryOperatorKind kind, Type operandType) :
             this(syntaxKind, kind, operandType, operandType)
         {
         }
@@ -21,10 +21,10 @@ namespace mc.CodeAnalysis.Binding
             SyntaxKind = syntaxKind;
             Kind = kind;
             OperandType = operandType;
-            ResultType = resultType;
+            Type = resultType;
         }
 
-        private static BoundUnaryOperator[] _operators =
+        private static readonly BoundUnaryOperator[] _operators =
         {
             new BoundUnaryOperator(SyntaxKind.BangToken, BoundUnaryOperatorKind.LogicalNegation, typeof(bool)),
             new BoundUnaryOperator(SyntaxKind.PlusToken, BoundUnaryOperatorKind.Identity, typeof(int)),
