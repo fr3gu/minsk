@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace mc.CodeAnalysis
+namespace mc.CodeAnalysis.Syntax
 {
     // 1 + 2 + 3
     //

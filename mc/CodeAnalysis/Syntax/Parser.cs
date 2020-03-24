@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Collections.Generic;
 
-namespace mc.CodeAnalysis
+namespace mc.CodeAnalysis.Syntax
 {
 
     internal sealed class Parser
