@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using mc.CodeAnalysis;
+using mc.CodeAnalysis.Binding;
 using mc.CodeAnalysis.Syntax;
 
 namespace mc
@@ -40,6 +41,10 @@ namespace mc
                 }
 
                 var syntaxTree = SyntaxTree.Parse(line);
+                var binder = new Binder();
+                var boundExpression = binder.BindExpression(syntaxTree.Root);
+
+                var diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
                 var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -48,9 +53,9 @@ namespace mc
 
                 Console.ForegroundColor = color;
 
-                if (!syntaxTree.Diagnostics.Any())
+                if (!diagnostics.Any())
                 {
-                    var e = new Evaluator(syntaxTree.Root);
+                    var e = new Evaluator(boundExpression);
                     var result = e.Evaluate();
                     Console.WriteLine(result);
                 }
@@ -58,7 +63,7 @@ namespace mc
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
 
-                    foreach (var entry in syntaxTree.Diagnostics)
+                    foreach (var entry in diagnostics)
                     {
                         Console.WriteLine(entry);
                     }
