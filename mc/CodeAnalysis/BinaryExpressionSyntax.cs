@@ -2,6 +2,24 @@
 
 namespace mc.CodeAnalysis
 {
+    // 1 + 2 + 3
+    //
+    //      +
+    //     / \
+    //    +   3
+    //   / \
+    //  1   2
+    //
+
+    // 1 + 2 * 3
+    //
+    //    +
+    //   / \
+    //  1   *
+    //     / \
+    //    2   3
+    //
+
     public sealed class BinaryExpressionSyntax : ExpressionSyntax
     {
         public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)

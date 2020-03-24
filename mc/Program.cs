@@ -5,24 +5,6 @@ using mc.CodeAnalysis;
 namespace mc
 {
 
-    // 1 + 2 + 3
-    //
-    //      +
-    //     / \
-    //    +   3
-    //   / \
-    //  1   2
-    //
-
-    // 1 + 2 * 3
-    //
-    //    +
-    //   / \
-    //  1   *
-    //     / \
-    //    2   3
-    //
-
     internal class Program
     {
         private static void Main()
