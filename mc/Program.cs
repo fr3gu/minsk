@@ -365,19 +365,34 @@ namespace mc
 
         public SyntaxTree Parse()
         {
-            var expression = ParseExpression();
+            var expression = ParseTerm();
             var eofToken = Match(SyntaxKind.EofToken);
 
             return new SyntaxTree(_diagnostics, expression, eofToken);
         }
 
-        private ExpressionSyntax ParseExpression()
+        private ExpressionSyntax ParseTerm()
         {
-            var left = ParsePrimaryExpression();
+            var left = ParseFactor();
 
             while (Current.Kind == SyntaxKind.PlusToken ||
                    Current.Kind == SyntaxKind.MinusToken ||
                    Current.Kind == SyntaxKind.StarToken ||
+                   Current.Kind == SyntaxKind.SlashToken)
+            {
+                var operatorToken = NextToken();
+                var right = ParseFactor();
+                left = new BinaryExpressionSyntax(left, operatorToken, right);
+            }
+
+            return left;
+        }
+
+        private ExpressionSyntax ParseFactor()
+        {
+            var left = ParsePrimaryExpression();
+
+            while (Current.Kind == SyntaxKind.StarToken ||
                    Current.Kind == SyntaxKind.SlashToken)
             {
                 var operatorToken = NextToken();
