@@ -44,6 +44,20 @@ namespace mc.CodeAnalysis
                             throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
                     }
                 }
+                case UnaryExpressionSyntax u:
+                {
+                    var operand = EvaluateExpression(u.Operand);
+
+                    switch (u.OperatorToken.Kind)
+                    {
+                        case SyntaxKind.PlusToken:
+                            return operand;
+                        case SyntaxKind.MinusToken:
+                            return -operand;
+                        default:
+                            throw new Exception($"Unexpected unary operator {u.OperatorToken.Kind}");
+                    }
+                }
                 case ParenthesizedExpressionSyntax p:
                     return EvaluateExpression(p.Expression);
                 default:
