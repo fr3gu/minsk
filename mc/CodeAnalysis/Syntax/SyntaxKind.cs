@@ -13,6 +13,9 @@
         SlashToken,
         OpenParensToken,
         CloseParensToken,
+        BangToken,
+        AndAlsoToken,
+        OrElseToken,
         Identifier,
 
         // Expressions

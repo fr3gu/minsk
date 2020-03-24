@@ -15,12 +15,13 @@ namespace mc.CodeAnalysis.Syntax
 
         public List<string> Diagnostics { get; }
 
-        private char Current
+        private char Current => Peek(0);
+        private char LookAhead => Peek(1);
+
+        private char Peek(int offset)
         {
-            get
-            {
-                return _position >= _text.Length ? '\0' : _text[_position];
-            }
+            var index = _position + offset;
+            return index >= _text.Length ? '\0' : _text[index];
         }
 
         private void Next()
@@ -92,6 +93,21 @@ namespace mc.CodeAnalysis.Syntax
                     return new SyntaxToken(SyntaxKind.OpenParensToken, _position++, "(", null);
                 case ')':
                     return new SyntaxToken(SyntaxKind.CloseParensToken, _position++, ")", null);
+                case '!':
+                    return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
+                case '&':
+                    if(LookAhead == '&')
+                    {
+                        return new SyntaxToken(SyntaxKind.AndAlsoToken, _position += 2, "&&", null);
+                    }
+                    break;
+                case '|':
+                    if (LookAhead == '|')
+                    {
+                        return new SyntaxToken(SyntaxKind.OrElseToken, _position += 2, "||", null);
+                    }
+                    break;
+
             }
 
             Diagnostics.Add($"ERROR: Bad character input: '{Current}'");
