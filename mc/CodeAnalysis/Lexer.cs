@@ -19,9 +19,7 @@ namespace mc.CodeAnalysis
         {
             get
             {
-                if (_position >= _text.Length) return '\0';
-
-                return _text[_position];
+                return _position >= _text.Length ? '\0' : _text[_position];
             }
         }
 
@@ -30,12 +28,8 @@ namespace mc.CodeAnalysis
             _position++;
         }
 
-        public SyntaxToken NextToken()
+        public SyntaxToken Lex()
         {
-            // <numbers>
-            // + - * / ( )
-            // <whitespace>
-
             if (_position >= _text.Length)
             {
                 return new SyntaxToken(SyntaxKind.EofToken, _position, "\0", null);
@@ -85,10 +79,10 @@ namespace mc.CodeAnalysis
                     return new SyntaxToken(SyntaxKind.OpenParensToken, _position++, "(", null);
                 case ')':
                     return new SyntaxToken(SyntaxKind.CloseParensToken, _position++, ")", null);
-                default:
-                    Diagnostics.Add($"ERROR: Bad character input: '{Current}'");
-                    return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
             }
+
+            Diagnostics.Add($"ERROR: Bad character input: '{Current}'");
+            return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
         }
     }
 }
