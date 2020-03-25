@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Minsk.Core.CodeAnalysis;
 using Minsk.Core.CodeAnalysis.Syntax;
+using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.ConsoleApp
 {
@@ -60,12 +61,18 @@ namespace Minsk.ConsoleApp
                 }
                 else
                 {
+                    var text = syntaxTree.Text;
 
                     foreach (var entry in diagnostics)
                     {
+                        var lineIndex = text.GetLineIndex(entry.Span.Start);
+                        var lineNumber = lineIndex + 1;
+                        var character = entry.Span.Start - text.Lines[lineIndex].Start + 1;
+
                         Console.WriteLine();
 
                         Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"({lineNumber}, {character}): ");
                         Console.WriteLine(entry);
                         Console.ResetColor();
 
@@ -75,9 +82,11 @@ namespace Minsk.ConsoleApp
 
                         Console.Write("    ");
                         Console.Write(prefix);
+
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write(error);
                         Console.ResetColor();
+
                         Console.Write(suffix);
                         Console.WriteLine();
                     }

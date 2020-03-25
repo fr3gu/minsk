@@ -5,13 +5,13 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 {
     internal class Lexer
     {
-        private readonly string _text;
+        private readonly SourceText _text;
         private int _position;
         private int _start;
         private SyntaxKind _kind;
         private object _value;
 
-        public Lexer(string text)
+        public Lexer(SourceText text)
         {
             _text = text;
             Diagnostics = new DiagnosticsBag();
@@ -146,7 +146,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             if (text2 == null)
             {
                 var length = _position - _start;
-                text2 = _text.Substring(_start, length);
+                text2 = _text.ToString(_start, length);
             }
             return new SyntaxToken(_kind, _start, text2, _value);
         }
@@ -169,11 +169,11 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             }
 
             var length = _position - _start;
-            var text = _text.Substring(_start, length);
+            var text = _text.ToString(_start, length);
 
             if (!int.TryParse(text, out var value))
             {
-                Diagnostics.ReportInvalidNumber(new TextSpan(_start, length), _text, typeof(int));
+                Diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, typeof(int));
             }
 
             _kind = SyntaxKind.NumberToken;
@@ -188,7 +188,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             }
 
             var lenght = _position - _start;
-            var text = _text.Substring(_start, lenght);
+            var text = _text.ToString(_start, lenght);
             _kind = SyntaxFacts.GetKeywordKind(text);
         }
     }
