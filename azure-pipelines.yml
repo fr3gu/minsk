@@ -9,8 +9,8 @@ variables:
 
 steps:
 
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build --configuration $(buildConfiguration)'
+- script: dotnet build --configuration $(buildConfiguration) --logger "trx;LogFileName=TestResults.xml"
+  displayName: 'dotnet build --configuration $(buildConfiguration) --logger "trx;LogFileName=TestResults.xml"'
 - script: dotnet test $(testProject)
   displayName: 'dotnet test $(testProject)'
 - task: PublishTestResults@2
