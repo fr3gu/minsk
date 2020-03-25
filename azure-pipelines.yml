@@ -15,7 +15,7 @@ steps:
   displayName: 'dotnet test $(testProject) --logger "trx;LogFileName=TestResults.xml"'
 - task: PublishTestResults@2
   inputs:
-    testResultsFormat: 'NUnit'
+    testResultsFormat: 'VSTest'
     testResultsFiles: '**/TestResults.xml'
     testRunTitle: 'Publish test results'
 
