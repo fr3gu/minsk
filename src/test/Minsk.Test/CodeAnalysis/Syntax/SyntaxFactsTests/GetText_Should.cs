@@ -27,8 +27,8 @@ namespace Minsk.Test.CodeAnalysis.Syntax.SyntaxFactsTests
 
         private static IEnumerable<object[]> GetSyntaxKindData()
         {
-            var values = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
-            foreach (var syntaxKind in values)
+            var kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+            foreach (var syntaxKind in kinds)
             {
                 yield return new object[] { syntaxKind };
             }
