@@ -8,9 +8,21 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B3DD29A-9904-45C4-89D5-BD767FBCB6F8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+		build.cmd = build.cmd
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minsk.Core", "src\shared\Minsk.Core\Minsk.Core.csproj", "{03D1DC8A-A865-4BE6-BE47-D3F1D794DDBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minsk.Core", "src\shared\Minsk.Core\Minsk.Core.csproj", "{03D1DC8A-A865-4BE6-BE47-D3F1D794DDBD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0E1346FC-57DB-48B5-BFAE-B0F0AA44820E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7A4F4DB3-DE27-430F-AE70-FE2970522229}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minsk.Test", "src\test\Minsk.Test\Minsk.Test.csproj", "{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,9 +58,25 @@ Global
 		{03D1DC8A-A865-4BE6-BE47-D3F1D794DDBD}.Release|x64.Build.0 = Release|Any CPU
 		{03D1DC8A-A865-4BE6-BE47-D3F1D794DDBD}.Release|x86.ActiveCfg = Release|Any CPU
 		{03D1DC8A-A865-4BE6-BE47-D3F1D794DDBD}.Release|x86.Build.0 = Release|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Debug|x64.Build.0 = Debug|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Debug|x86.Build.0 = Debug|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Release|x64.ActiveCfg = Release|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Release|x64.Build.0 = Release|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Release|x86.ActiveCfg = Release|Any CPU
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7A4F4DB3-DE27-430F-AE70-FE2970522229} = {0E1346FC-57DB-48B5-BFAE-B0F0AA44820E}
+		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB} = {7A4F4DB3-DE27-430F-AE70-FE2970522229}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C22A1E98-FD36-4EBB-B971-5CD0C36F1778}
