@@ -16,5 +16,5 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'NUnit'
-    testResultsFiles: '**/TEST-*.xml'
+    testResultsFiles: '**/TestResults/TestResults.xml'
     testRunTitle: 'Publish test results'
