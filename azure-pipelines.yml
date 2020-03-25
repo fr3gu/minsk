@@ -13,3 +13,8 @@ steps:
   displayName: 'dotnet build --configuration $(buildConfiguration)'
 - script: dotnet test $(testProject)
   displayName: 'dotnet test $(testProject)'
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '**/TEST-*.xml'
+    testRunTitle: 'Publish test results'
