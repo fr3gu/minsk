@@ -17,6 +17,6 @@
 
         public object Value { get; }
         public override SyntaxKind Kind { get; }
-        public TextSpan Span => new TextSpan(Position, Text?.Length ?? 0);
+        public TextSpan Span => new TextSpan(Position, Text.Length);
     }
 }
