@@ -10,6 +10,25 @@ namespace Minsk.Test.CodeAnalysis.Syntax.LexterTests
     public class Lex_Should
     {
         [TestCaseSource(nameof(GetTokenData))]
+        public void LexTokensAllPossibleTokens(SyntaxKind kind, string text)
+        {
+            var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
+                .Cast<SyntaxKind>()
+                .Where(k => k.ToString().EndsWith("Keyword") ||
+                            k.ToString().EndsWith("Token"))
+                .ToList();
+
+            var testedTokenKinds = GetTokens().Concat(GetSeparators()).Select(t => t.Kind);
+
+            var untestedTokenKinds = new SortedSet<SyntaxKind>(tokenKinds);
+            untestedTokenKinds.Remove(SyntaxKind.BadToken);
+            untestedTokenKinds.Remove(SyntaxKind.EofToken);
+            untestedTokenKinds.ExceptWith(testedTokenKinds);
+
+            Assert.That(untestedTokenKinds, Is.Empty);
+        }
+
+        [TestCaseSource(nameof(GetTokenData))]
         public void LexTokens_Given_SyntaxKind(SyntaxKind kind, string text)
         {
             var tokens = SyntaxTree.ParseTokens(text).ToArray();
