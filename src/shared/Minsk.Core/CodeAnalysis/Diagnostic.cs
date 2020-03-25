@@ -69,7 +69,7 @@ namespace Minsk.Core.CodeAnalysis
 
         public void ReportUndefinedName(TextSpan span, string name)
         {
-            var message = $"smurf {name} is missing";
+            var message = $"Variable '{name}' is missing";
             Report(span, message);
         }
     }
