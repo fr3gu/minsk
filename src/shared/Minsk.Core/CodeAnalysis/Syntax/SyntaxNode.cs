@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.Core.CodeAnalysis.Syntax
 {

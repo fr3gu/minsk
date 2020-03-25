@@ -1,4 +1,4 @@
-﻿namespace Minsk.Core.CodeAnalysis
+﻿namespace Minsk.Core.CodeAnalysis.Text
 {
     public struct TextSpan
     {

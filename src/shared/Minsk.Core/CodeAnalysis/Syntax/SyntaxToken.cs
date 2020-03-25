@@ -1,4 +1,6 @@
-﻿namespace Minsk.Core.CodeAnalysis.Syntax
+﻿using Minsk.Core.CodeAnalysis.Text;
+
+namespace Minsk.Core.CodeAnalysis.Syntax
 {
     public class SyntaxToken : SyntaxNode
     {
