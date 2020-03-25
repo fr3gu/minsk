@@ -147,7 +147,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 var length = _position - _start;
                 text2 = _text.Substring(_start, length);
             }
-            return new SyntaxToken(_kind, _position, text2, _value);
+            return new SyntaxToken(_kind, _start, text2, _value);
         }
 
         private void ReadWhiteSpace()
