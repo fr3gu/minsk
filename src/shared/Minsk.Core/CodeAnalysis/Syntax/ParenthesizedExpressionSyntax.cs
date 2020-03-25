@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Minsk.Core.CodeAnalysis.Syntax
+﻿namespace Minsk.Core.CodeAnalysis.Syntax
 {
     public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
     {
@@ -16,11 +14,5 @@ namespace Minsk.Core.CodeAnalysis.Syntax
         public SyntaxToken CloseParensToken { get; }
 
         public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            yield return OpenParensToken;
-            yield return Expression;
-            yield return CloseParensToken;
-        }
     }
 }
