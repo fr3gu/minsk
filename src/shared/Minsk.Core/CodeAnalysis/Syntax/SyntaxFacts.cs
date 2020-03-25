@@ -1,4 +1,8 @@
-﻿namespace Minsk.Core.CodeAnalysis.Syntax
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Minsk.Core.CodeAnalysis.Syntax
 {
     public static class SyntaxFacts
     {
@@ -84,6 +88,30 @@
                     return "true";
                 default:
                     return null;
+            }
+        }
+
+        public static IEnumerable<SyntaxKind> GetUnaryOperatorKinds()
+        {
+            var kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+            foreach (var kind in kinds)
+            {
+                if (GetUnaryOperatorPrecedence(kind) > 0)
+                {
+                    yield return kind;
+                }
+            }
+        }
+
+        public static IEnumerable<SyntaxKind> GetBinaryOperatorKinds()
+        {
+            var kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+            foreach (var kind in kinds)
+            {
+                if (GetBinaryOperatorPrecedence(kind) > 0)
+                {
+                    yield return kind;
+                }
             }
         }
     }
