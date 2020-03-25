@@ -16,5 +16,6 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'NUnit'
-    testResultsFiles: './src/test/Minsk.Test/TestResults/TestResults.xml'
+    testResultsFiles: '**/TestResults.xml'
     testRunTitle: 'Publish test results'
+
