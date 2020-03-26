@@ -63,6 +63,14 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     _kind = SyntaxKind.CloseParensToken;
                     _position++;
                     break;
+                case '{':
+                    _kind = SyntaxKind.OpenBraceToken;
+                    _position++;
+                    break;
+                case '}':
+                    _kind = SyntaxKind.CloseBraceToken;
+                    _position++;
+                    break;
                 case '&':
                     _position++;
                     if (Current == '&')

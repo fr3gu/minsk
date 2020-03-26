@@ -66,7 +66,9 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
         {
             var syntaxTree = SyntaxTree.Parse(text);
             var root = syntaxTree.Root;
-            return root.Expression;
+            var statement = root.Statement;
+            Assert.That(statement, Is.TypeOf(typeof(ExpressionStatementSyntax)));
+            return ((ExpressionStatementSyntax)statement).Expression;
         }
 
         [TestCaseSource(nameof(GetUnaryOperatorsData))]

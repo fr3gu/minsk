@@ -2,12 +2,12 @@
 {
     public sealed class CompilationUnitSyntax : SyntaxNode
     {
-        public ExpressionSyntax Expression { get; }
+        public StatementSyntax Statement { get; }
         public SyntaxToken EofToken { get; }
 
-        public CompilationUnitSyntax(ExpressionSyntax expression, SyntaxToken eofToken)
+        public CompilationUnitSyntax(StatementSyntax statement, SyntaxToken eofToken)
         {
-            Expression = expression;
+            Statement = statement;
             EofToken = eofToken;
         }
 

@@ -33,7 +33,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         [TestCase("true && false", false)]
         [TestCase("false || true", true)]
         [TestCase("false || false", false)]
-        [TestCase("(a = 10) * a", 100)]
+        [TestCase("{ var a = 0 (a = 10) * a}", 100)]
         public void AccuratelyEvaluateExpressions(string text, object expected)
         {
             var expression = SyntaxTree.Parse(text);

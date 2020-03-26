@@ -49,6 +49,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return SyntaxKind.TrueKeyword;
                 case "false":
                     return SyntaxKind.FalseKeyword;
+                case "let":
+                    return SyntaxKind.LetKeyword;
+                case "var":
+                    return SyntaxKind.VarKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -70,6 +74,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return "(";
                 case SyntaxKind.CloseParensToken:
                     return ")";
+                case SyntaxKind.OpenBraceToken:
+                    return "{";
+                case SyntaxKind.CloseBraceToken:
+                    return "}";
                 case SyntaxKind.BangToken:
                     return "!";
                 case SyntaxKind.AmpersandAmpersandToken:
@@ -86,6 +94,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return "false";
                 case SyntaxKind.TrueKeyword:
                     return "true";
+                case SyntaxKind.LetKeyword:
+                    return "let";
+                case SyntaxKind.VarKeyword:
+                    return "var";
                 default:
                     return null;
             }
