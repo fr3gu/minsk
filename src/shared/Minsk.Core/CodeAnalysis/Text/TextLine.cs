@@ -5,9 +5,11 @@
         public SourceText Text { get; }
         public int Start { get; }
         public int Length { get; }
+        public int End => Start + Length;
         public int LengthInclLineBreak { get; }
         public TextSpan Span => new TextSpan(Start, Length);
         public TextSpan SpanInclLineBreak => new TextSpan(Start, LengthInclLineBreak);
+        public override string ToString() => Text.ToString(Span);
 
         public TextLine(SourceText text, int start, int length, int lengthInclLineBreak)
         {
@@ -16,7 +18,5 @@
             Length = length;
             LengthInclLineBreak = lengthInclLineBreak;
         }
-
-        public override string ToString() => Text.ToString(Span);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Minsk.Core.CodeAnalysis;
 using Minsk.Core.CodeAnalysis.Syntax;
 using Minsk.Core.CodeAnalysis.Text;
@@ -14,35 +15,54 @@ namespace Minsk.ConsoleApp
         {
             var showTree = false;
             var variables = new Dictionary<VariableSymbol, object>();
+            var textBuilder = new StringBuilder();
+            var keepGoing = true;
 
-            while(true)
+            while(keepGoing)
             {
-                Console.Write("> ");
-
-                var line = Console.ReadLine();
-
-                if(string.IsNullOrWhiteSpace(line))
+                if(textBuilder.Length == 0)
                 {
-                    return;
+                    Console.Write("> ");
+                }
+                else
+                {
+                    Console.Write("| ");
                 }
 
-                if (line == "#showTree")
+                var input = Console.ReadLine();
+                var isBlank = string.IsNullOrWhiteSpace(input);
+
+                if (textBuilder.Length == 0)
                 {
-                    showTree = !showTree;
-                    Console.WriteLine(showTree ? "Showing parse tree." : "Not showing parse tree.");
+                    if(isBlank)
+                    {
+                        return;
+                    }
+                    switch (input)
+                    {
+                        case "#showTree":
+                            showTree = !showTree;
+                            Console.WriteLine(showTree ? "Showing parse tree." : "Not showing parse tree.");
+                            continue;
+                        case "#cls":
+                            Console.Clear();
+                            continue;
+                        case "#quit":
+                            keepGoing = false;
+                            break;
+                    }
+                }
+
+                textBuilder.AppendLine(input);
+                var text = textBuilder.ToString();
+
+                var syntaxTree = SyntaxTree.Parse(text);
+
+                if (!isBlank && syntaxTree.Diagnostics.Any())
+                {
                     continue;
                 }
-                if (line == "#cls")
-                {
-                    Console.Clear();
-                    continue;
-                }
-                if (line == "#quit")
-                {
-                    break;
-                }
 
-                var syntaxTree = SyntaxTree.Parse(line);
                 var compilation = new Compilation(syntaxTree);
                 var result = compilation.Evaluate(variables);
 
@@ -61,24 +81,26 @@ namespace Minsk.ConsoleApp
                 }
                 else
                 {
-                    var text = syntaxTree.Text;
-
-                    foreach (var entry in diagnostics)
+                    foreach (var diagnostic in diagnostics)
                     {
-                        var lineIndex = text.GetLineIndex(entry.Span.Start);
+                        var lineIndex = syntaxTree.Text.GetLineIndex(diagnostic.Span.Start);
+                        var line = syntaxTree.Text.Lines[lineIndex];
                         var lineNumber = lineIndex + 1;
-                        var character = entry.Span.Start - text.Lines[lineIndex].Start + 1;
+                        var character = diagnostic.Span.Start - line.Start + 1;
 
                         Console.WriteLine();
 
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write($"({lineNumber}, {character}): ");
-                        Console.WriteLine(entry);
+                        Console.WriteLine(diagnostic);
                         Console.ResetColor();
 
-                        var prefix = line.Substring(0, entry.Span.Start);
-                        var error = line.Substring(entry.Span.Start, entry.Span.Length);
-                        var suffix = line.Substring(entry.Span.End);
+                        var prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.Span.Start);
+                        var suffixSpan = TextSpan.FromBounds(diagnostic.Span.End, line.End);
+
+                        var prefix = syntaxTree.Text.ToString(prefixSpan);
+                        var error = syntaxTree.Text.ToString(diagnostic.Span);
+                        var suffix = syntaxTree.Text.ToString(suffixSpan);
 
                         Console.Write("    ");
                         Console.Write(prefix);
@@ -93,6 +115,8 @@ namespace Minsk.ConsoleApp
 
                     Console.WriteLine();
                 }
+
+                textBuilder.Clear();
             }
         }
     }
