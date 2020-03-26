@@ -81,12 +81,12 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             return new SyntaxToken(kind, Current.Position, null, null);
         }
 
-        public SyntaxTree Parse()
+        public CompilationUnitSyntax ParseCompilationUnit()
         {
             var expression = ParseExpression();
             var eofToken = MatchToken(SyntaxKind.EofToken);
 
-            return new SyntaxTree(_text, Diagnostics.ToImmutableArray(), expression, eofToken);
+            return new CompilationUnitSyntax(expression, eofToken);
         }
 
         private ExpressionSyntax ParseExpression()

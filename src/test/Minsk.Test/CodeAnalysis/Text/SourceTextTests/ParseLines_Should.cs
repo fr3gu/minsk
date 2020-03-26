@@ -9,6 +9,7 @@ namespace Minsk.Test.CodeAnalysis.Text.SourceTextTests
     public class ParseLines_Should
     {
         [TestCase(".", 1)]
+        [TestCase(".\r\n", 2)]
         [TestCase(".\r\n\r\n", 3)]
         public void IncludeLastLine(string text, int expectedLineCount)
         {

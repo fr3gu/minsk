@@ -9,19 +9,19 @@ namespace Minsk.Core.CodeAnalysis
 {
     public sealed class Compilation
     {
-        public SyntaxTree Syntax { get; }
+        public SyntaxTree SyntaxTree { get; }
 
-        public Compilation(SyntaxTree syntax)
+        public Compilation(SyntaxTree syntaxTree)
         {
-            Syntax = syntax;
+            SyntaxTree = syntaxTree;
         }
 
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
             var binder = new Binder(variables);
-            var boundExpression = binder.BindExpression(Syntax.Root);
+            var boundExpression = binder.BindExpression(SyntaxTree.Root.Expression);
 
-            var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
+            var diagnostics = SyntaxTree.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
 
             if (diagnostics.Any())
             {

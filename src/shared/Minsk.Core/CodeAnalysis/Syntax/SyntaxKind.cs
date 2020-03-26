@@ -31,6 +31,9 @@
 
         // Keywords
         FalseKeyword,
-        TrueKeyword
+        TrueKeyword,
+
+        // Nodes
+        CompilationUnit
     }
 }
