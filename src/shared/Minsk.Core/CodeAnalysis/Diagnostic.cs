@@ -70,7 +70,7 @@ namespace Minsk.Core.CodeAnalysis
 
         public void ReportUndefinedName(TextSpan span, string name)
         {
-            var message = $"Variable '{name}' is missing";
+            var message = $"Variable '{name}' doesn't exist";
             Report(span, message);
         }
     }
