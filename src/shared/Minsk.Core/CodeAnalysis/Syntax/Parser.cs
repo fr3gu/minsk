@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.Core.CodeAnalysis.Syntax
@@ -81,12 +83,59 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             return new SyntaxToken(kind, Current.Position, null, null);
         }
 
-        public SyntaxTree Parse()
+        public CompilationUnitSyntax ParseCompilationUnit()
         {
-            var expression = ParseExpression();
+            var statement = ParseStatement();
             var eofToken = MatchToken(SyntaxKind.EofToken);
 
-            return new SyntaxTree(_text, Diagnostics.ToImmutableArray(), expression, eofToken);
+            return new CompilationUnitSyntax(statement, eofToken);
+        }
+
+        public StatementSyntax ParseStatement()
+        {
+            switch (Current.Kind)
+            {
+                case SyntaxKind.OpenBraceToken:
+                    return ParseBlockStatement();
+                case SyntaxKind.LetKeyword:
+                case SyntaxKind.VarKeyword:
+                    return ParseVariableDeclarationStatement();
+                default:
+                    return ParseExpressionStatement();
+            }
+        }
+
+        private StatementSyntax ParseVariableDeclarationStatement()
+        {
+            var expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+
+            var keyword = MatchToken(expected);
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var equalsToken = MatchToken(SyntaxKind.EqualsToken);
+            var initializer = ParseExpression();
+
+            return new VariableDeclarationStatementSyntax(keyword, identifier, equalsToken, initializer);
+        }
+
+        private BlockStatementSyntax ParseBlockStatement()
+        {
+            var statements = ImmutableArray.CreateBuilder<StatementSyntax>();
+            var openBraceToken = MatchToken(SyntaxKind.OpenBraceToken);
+            while (Current.Kind != SyntaxKind.EofToken && Current.Kind != SyntaxKind.CloseBraceToken)
+            {
+                var statement = ParseStatement();
+                statements.Add(statement);
+            }
+            var closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
+
+            return new BlockStatementSyntax(openBraceToken, statements.ToImmutable(), closeBraceToken);
+        }
+
+        private ExpressionStatementSyntax ParseExpressionStatement()
+        {
+            var expression = ParseExpression();
+            return new ExpressionStatementSyntax(expression);
+
         }
 
         private ExpressionSyntax ParseExpression()

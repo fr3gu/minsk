@@ -13,6 +13,8 @@
         SlashToken,
         OpenParensToken,
         CloseParensToken,
+        OpenBraceToken,
+        CloseBraceToken,
         BangToken,
         AmpersandAmpersandToken,
         PipePipeToken,
@@ -21,16 +23,26 @@
         EqualsToken,
         IdentifierToken,
 
-        // Expressions
-        LiteralExpression,
-        BinaryExpression,
-        ParenthesizedExpression,
-        UnaryExpression,
-        NameExpression,
-        AssignmentExpression,
-
         // Keywords
         FalseKeyword,
-        TrueKeyword
+        TrueKeyword,
+        LetKeyword,
+        VarKeyword,
+
+        // Nodes
+        CompilationUnit,
+
+        // Statements
+        BlockStatement,
+        ExpressionStatement,
+        VariableDeclarationStatement,
+
+        // Expressions
+        ParenthesizedExpression,
+        LiteralExpression,
+        NameExpression,
+        BinaryExpression,
+        UnaryExpression,
+        AssignmentExpression
     }
 }

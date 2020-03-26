@@ -15,7 +15,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
             var op1Text = op1.GetText();
             var op2Text = op2.GetText();
             var text = $"a {op1Text} b {op2Text} c";
-            var expression = SyntaxTree.Parse(text);
+            var expressionSyntax = ParseExpression(text);
 
             if (op1Precedence >= op2Precedence)
             {
@@ -24,7 +24,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
                 //   op1    c
                 //  /   \
                 // a     b
-                using (var asserter = new AssertingEnumerator(expression.Root))
+                using (var asserter = new AssertingEnumerator(expressionSyntax))
                 {
                     asserter.AssertNode(SyntaxKind.BinaryExpression);
                     asserter.AssertNode(SyntaxKind.BinaryExpression);
@@ -46,7 +46,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
                 //     /   \
                 //    b     c
 
-                using (var asserter = new AssertingEnumerator(expression.Root))
+                using (var asserter = new AssertingEnumerator(expressionSyntax))
                 {
                     asserter.AssertNode(SyntaxKind.BinaryExpression);
                     asserter.AssertNode(SyntaxKind.NameExpression);
@@ -62,6 +62,15 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
             }
         }
 
+        private static ExpressionSyntax ParseExpression(string text)
+        {
+            var syntaxTree = SyntaxTree.Parse(text);
+            var root = syntaxTree.Root;
+            var statement = root.Statement;
+            Assert.That(statement, Is.TypeOf(typeof(ExpressionStatementSyntax)));
+            return ((ExpressionStatementSyntax)statement).Expression;
+        }
+
         [TestCaseSource(nameof(GetUnaryOperatorsData))]
         public void HonorPrecedences_GivenUnaryExpression(SyntaxKind unaaryKind, SyntaxKind binaryKind)
         {
@@ -70,7 +79,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
             var unaryText = unaaryKind.GetText();
             var binaryText = binaryKind.GetText();
             var text = $"{unaryText} a {binaryText} b";
-            var expression = SyntaxTree.Parse(text);
+            var expressionSyntax = ParseExpression(text);
 
             if (unaryPrecedence >= binaryPrecedence)
             {
@@ -80,7 +89,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
                 //  |
                 //  a
 
-                using (var asserter = new AssertingEnumerator(expression.Root))
+                using (var asserter = new AssertingEnumerator(expressionSyntax))
                 {
                     asserter.AssertNode(SyntaxKind.BinaryExpression);
                     asserter.AssertNode(SyntaxKind.UnaryExpression);
@@ -100,7 +109,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.ParserTests
                 //  /   \
                 // a     b
 
-                using (var asserter = new AssertingEnumerator(expression.Root))
+                using (var asserter = new AssertingEnumerator(expressionSyntax))
                 {
                     asserter.AssertNode(SyntaxKind.UnaryExpression);
                     asserter.AssertNode(SyntaxKind.BinaryExpression);

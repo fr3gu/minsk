@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Minsk.Core.CodeAnalysis.Syntax;
 
@@ -7,16 +8,110 @@ namespace Minsk.Core.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
-        private readonly Dictionary<VariableSymbol, object> _variables;
+        private BoundScope _scope;
         public DiagnosticsBag Diagnostics { get; }
 
-        public Binder(Dictionary<VariableSymbol, object> variables)
+
+        public Binder(BoundScope parent)
         {
-            _variables = variables;
             Diagnostics = new DiagnosticsBag();
+            _scope = new BoundScope(parent);
         }
 
-        public BoundExpression BindExpression(ExpressionSyntax syntax)
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax)
+        {
+            var parentScope = CreateParentScope(previous);
+            var binder = new Binder(parentScope);
+            var expression = binder.BindStatement(syntax.Statement);
+            var variables = binder._scope.GetDeclaredVariables();
+            var diagnostics = binder.Diagnostics.ToImmutableArray();
+
+            return new BoundGlobalScope(previous, diagnostics, variables, expression);
+        }
+
+        private static BoundScope CreateParentScope(BoundGlobalScope previous)
+        {
+            // submission 3 -> submission 2 -> submission 1
+            // submission 1 -> submission 2 -> submission 3
+            var stack = new Stack<BoundGlobalScope>();
+            while (previous != null)
+            {
+                stack.Push(previous);
+                previous = previous.Previous;
+            }
+
+            BoundScope parent = null;
+
+            while (stack.Count > 0)
+            {
+                previous = stack.Pop();
+                var scope = new BoundScope(parent);
+                foreach (var variable in previous.Variables)
+                {
+                    scope.TryDeclare(variable);
+                }
+
+                parent = scope;
+            }
+
+            return parent;
+        }
+
+        private BoundStatement BindStatement(StatementSyntax syntax)
+        {
+            switch (syntax.Kind)
+            {
+                case SyntaxKind.BlockStatement:
+                    return BindBlockStatement((BlockStatementSyntax)syntax);
+                case SyntaxKind.VariableDeclarationStatement:
+                    return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax);
+                case SyntaxKind.ExpressionStatement:
+                    return BindExpressionStatement((ExpressionStatementSyntax)syntax);
+                default:
+                    throw new Exception($"Unexpected syntax {syntax.Kind}");
+            }
+        }
+
+        private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
+        {
+            var statements = ImmutableArray.CreateBuilder<BoundStatement>();
+
+            _scope = new BoundScope(_scope);
+
+            foreach (var statementSyntax in syntax.Statements)
+            {
+                var statement = BindStatement(statementSyntax);
+                statements.Add(statement);
+            }
+
+            _scope = _scope.Parent;
+
+            return new BoundBlockStatement(statements.ToImmutable());
+        }
+
+        private BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementSyntax syntax)
+        {
+            var name = syntax.Identifier.Text;
+            var isReadOnly = syntax.Keyword.Kind == SyntaxKind.LetKeyword;
+            var initializer = BindExpression(syntax.Initializer);
+
+            var variable = new VariableSymbol(name, isReadOnly, initializer.Type);
+
+            if (!_scope.TryDeclare(variable))
+            {
+                Diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
+            }
+
+            return new BoundVariableDeclarationStatement(variable, initializer);
+        }
+
+        private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+        {
+            var expression = BindExpression(syntax.Expression);
+            return new BoundExpressionStatement(expression);
+        }
+
+        private BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
             {
@@ -37,42 +132,6 @@ namespace Minsk.Core.CodeAnalysis.Binding
             }
         }
 
-        private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
-        {
-            var name = syntax.IdentifierToken.Text;
-            var boundExpression = BindExpression(syntax.Expression);
-
-            var existingVariable = _variables.Keys.FirstOrDefault(v => v.Name == name);
-            if (existingVariable != null)
-            {
-                _variables.Remove(existingVariable);
-            }
-
-            var variable = new VariableSymbol(name, boundExpression.Type);
-            _variables[variable] = null;
-
-            return new BoundAssignmentExpression(variable, boundExpression);
-        }
-
-        private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
-        {
-            var name = syntax.IdentifierToken.Text;
-            var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
-
-            if (variable == null)
-            {
-                Diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
-                return new BoundLiteralExpression(0);
-            }
-
-            return BindVariableExpression(variable);
-        }
-
-        private BoundExpression BindVariableExpression(VariableSymbol variable)
-        {
-            return new BoundVariableExpression(variable);
-        }
-
         private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)
         {
             return BindExpression(syntax.Expression);
@@ -82,6 +141,47 @@ namespace Minsk.Core.CodeAnalysis.Binding
         {
             var value = syntax.Value ?? 0;
             return new BoundLiteralExpression(value);
+        }
+
+        private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+        {
+            var name = syntax.IdentifierToken.Text;
+            //var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
+
+            if (!_scope.TryLookup(name, out var variable))
+            {
+                Diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+                return new BoundLiteralExpression(0);
+            }
+
+            return BindVariableExpression(variable);
+        }
+
+        private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
+        {
+            var name = syntax.IdentifierToken.Text;
+            var boundExpression = BindExpression(syntax.Expression);
+
+            if (!_scope.TryLookup(name, out var variable))
+            {
+                Diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+                return boundExpression;
+            }
+
+            if (variable.IsReadonly)
+            {
+                Diagnostics.ReportCannotAssign(syntax.EqualsToken.Span, name);
+                return boundExpression;
+            }
+
+            if (boundExpression.Type != variable.Type)
+            {
+                Diagnostics.ReportCannotConvert(syntax.IdentifierToken.Span, name, boundExpression.Type, variable.Type);
+                return boundExpression;
+            }
+
+
+            return new BoundAssignmentExpression(variable, boundExpression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
@@ -109,6 +209,11 @@ namespace Minsk.Core.CodeAnalysis.Binding
             Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
             return boundLeft;
 
+        }
+
+        private BoundExpression BindVariableExpression(VariableSymbol variable)
+        {
+            return new BoundVariableExpression(variable);
         }
     }
 }

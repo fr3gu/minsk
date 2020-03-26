@@ -6,10 +6,12 @@ namespace Minsk.Core.CodeAnalysis
 {
     internal sealed class Evaluator
     {
-        private readonly BoundExpression _root;
+        private readonly BoundStatement _root;
         private readonly Dictionary<VariableSymbol, object> _variables;
 
-        public Evaluator(BoundExpression root, Dictionary<VariableSymbol, object> variables)
+        private object _lastValue;
+
+        public Evaluator(BoundStatement root, Dictionary<VariableSymbol, object> variables)
         {
             _root = root;
             _variables = variables;
@@ -17,7 +19,49 @@ namespace Minsk.Core.CodeAnalysis
 
         public object Evaluate()
         {
-            return EvaluateExpression(_root);
+            EvaluateStatement(_root);
+            return _lastValue;
+        }
+
+        private void EvaluateStatement(BoundStatement node)
+        {
+
+            switch (node.Kind)
+            {
+                case BoundNodeKind.BlockStatement:
+                    EvaluateBlockStatement((BoundBlockStatement)node);
+                    break;
+                case BoundNodeKind.VariableDeclarationStatement:
+                    EvaluateVariableDeclarationStatement((BoundVariableDeclarationStatement)node);
+                    break;
+                case BoundNodeKind.ExpressionStatement:
+                    EvaluateExpressionStatement((BoundExpressionStatement)node);
+                    break;
+                default:
+                    throw new Exception($"Unexpected node {node.Kind}");
+            }
+        }
+
+        private void EvaluateBlockStatement(BoundBlockStatement node)
+        {
+            foreach (var statement in node.Statements)
+            {
+                EvaluateStatement(statement);
+            }
+        }
+
+        private void EvaluateVariableDeclarationStatement(BoundVariableDeclarationStatement node)
+        {
+            var expression = node.Initializer;
+            var initializerValue = EvaluateExpression(expression);
+            _variables[node.Variable] = initializerValue;
+            _lastValue = initializerValue;
+        }
+
+        private void EvaluateExpressionStatement(BoundExpressionStatement node)
+        {
+            var expression = node.Expression;
+            _lastValue = EvaluateExpression(expression);
         }
 
         private object EvaluateExpression(BoundExpression node)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using Minsk.Core.CodeAnalysis.Binding;
 using Minsk.Core.CodeAnalysis.Syntax;
 
@@ -9,26 +10,50 @@ namespace Minsk.Core.CodeAnalysis
 {
     public sealed class Compilation
     {
-        public SyntaxTree Syntax { get; }
+        private BoundGlobalScope _globalScope;
 
-        public Compilation(SyntaxTree syntax)
+        public Compilation Previous { get; }
+        public SyntaxTree SyntaxTree { get; }
+
+        public Compilation(SyntaxTree syntaxTree) : this(null, syntaxTree)
         {
-            Syntax = syntax;
+        }
+
+        private Compilation(Compilation previous, SyntaxTree syntaxTree)
+        {
+            _globalScope = null;
+            Previous = previous;
+            SyntaxTree = syntaxTree;
+        }
+
+        internal BoundGlobalScope GlobalScope
+        {
+            get
+            {
+                if (_globalScope != null) return _globalScope;
+
+                var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
+                Interlocked.CompareExchange(ref _globalScope, globalScope, null);
+
+                return _globalScope;
+            }
+        }
+
+        public Compilation ContinueWith(SyntaxTree syntaxTree)
+        {
+            return new Compilation(this, syntaxTree);
         }
 
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
-            var binder = new Binder(variables);
-            var boundExpression = binder.BindExpression(Syntax.Root);
-
-            var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
+            var diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
 
             if (diagnostics.Any())
             {
                 return new EvaluationResult(diagnostics, null);
             }
 
-            var evaluator = new Evaluator(boundExpression, variables);
+            var evaluator = new Evaluator(GlobalScope.Statement, variables);
             var value = evaluator.Evaluate();
 
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
