@@ -16,6 +16,7 @@ namespace Minsk.ConsoleApp
             var showTree = false;
             var variables = new Dictionary<VariableSymbol, object>();
             var textBuilder = new StringBuilder();
+            Compilation previous = null;
             var keepGoing = true;
 
             while(keepGoing)
@@ -51,6 +52,9 @@ namespace Minsk.ConsoleApp
                         case "#cls":
                             Console.Clear();
                             continue;
+                        case "#reset":
+                            previous = null;
+                            continue;
                         case "#quit":
                             keepGoing = false;
                             break;
@@ -67,7 +71,7 @@ namespace Minsk.ConsoleApp
                     continue;
                 }
 
-                var compilation = new Compilation(syntaxTree);
+                var compilation = previous == null ? new Compilation(syntaxTree) : previous.ContinueWith(syntaxTree);
                 var result = compilation.Evaluate(variables);
 
                 var diagnostics = result.Diagnostics.ToArray();
@@ -84,6 +88,7 @@ namespace Minsk.ConsoleApp
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(result.Value);
                     Console.ResetColor();
+                    previous = compilation;
                 }
                 else
                 {
