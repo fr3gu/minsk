@@ -69,7 +69,7 @@ namespace Minsk.Core.CodeAnalysis.Text
                 }
             }
 
-            if (position > lineStart)
+            if (position >= lineStart)
             {
                 result.AddLine(sourceText, position, lineStart, 0);
             }
