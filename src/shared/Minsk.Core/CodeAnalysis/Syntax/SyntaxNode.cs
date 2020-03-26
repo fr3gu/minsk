@@ -27,14 +27,14 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
             foreach (var property in properties)
             {
-                if(typeof(SyntaxNode).IsAssignableFrom(property.PropertyType))
+                if (typeof(SyntaxNode).IsAssignableFrom(property.PropertyType))
                 {
-                    var child = (SyntaxNode) property.GetValue(this);
+                    var child = (SyntaxNode)property.GetValue(this);
                     yield return child;
                 }
                 else if (typeof(IEnumerable<SyntaxNode>).IsAssignableFrom(property.PropertyType))
                 {
-                    var children = (IEnumerable<SyntaxNode>) property.GetValue(this);
+                    var children = (IEnumerable<SyntaxNode>)property.GetValue(this);
                     foreach (var child in children)
                     {
                         yield return child;
@@ -50,17 +50,30 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
         private static void PrettyPrint(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
         {
+            var isToConsole = writer == Console.Out;
+
             var marker = isLast ? "└── " : "├── ";
+
+            if (isToConsole) Console.ForegroundColor = ConsoleColor.DarkGray;
 
             writer.Write(indent);
             writer.Write(marker);
+
+            if (isToConsole) Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.DarkCyan : ConsoleColor.Cyan;
+
             writer.Write(node.Kind);
+
 
             if (node is SyntaxToken t && t.Value != null)
             {
                 writer.Write(" ");
+                if (isToConsole) Console.ForegroundColor = ConsoleColor.Yellow;
+
                 writer.Write(t.Value);
             }
+
+            if (isToConsole) Console.ResetColor();
+
 
             writer.WriteLine();
 
