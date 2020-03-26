@@ -18,10 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minsk.Core", "src\shared\Minsk.Core\Minsk.Core.csproj", "{03D1DC8A-A865-4BE6-BE47-D3F1D794DDBD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0E1346FC-57DB-48B5-BFAE-B0F0AA44820E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7A4F4DB3-DE27-430F-AE70-FE2970522229}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minsk.Test", "src\test\Minsk.Test\Minsk.Test.csproj", "{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB}"
 EndProject
 Global
@@ -73,10 +69,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{7A4F4DB3-DE27-430F-AE70-FE2970522229} = {0E1346FC-57DB-48B5-BFAE-B0F0AA44820E}
-		{AE533C7B-F6E2-4B9B-8909-EA7AF5437DFB} = {7A4F4DB3-DE27-430F-AE70-FE2970522229}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C22A1E98-FD36-4EBB-B971-5CD0C36F1778}
