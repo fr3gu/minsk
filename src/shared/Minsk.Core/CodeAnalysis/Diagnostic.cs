@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Minsk.Core.CodeAnalysis.Syntax;
+using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.Core.CodeAnalysis
 {
@@ -69,7 +70,7 @@ namespace Minsk.Core.CodeAnalysis
 
         public void ReportUndefinedName(TextSpan span, string name)
         {
-            var message = $"smurf {name} is missing";
+            var message = $"Variable '{name}' doesn't exist";
             Report(span, message);
         }
     }

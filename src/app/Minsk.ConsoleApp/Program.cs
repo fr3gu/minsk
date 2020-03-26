@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Minsk.Core.CodeAnalysis;
 using Minsk.Core.CodeAnalysis.Syntax;
+using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.ConsoleApp
 {
@@ -13,35 +15,54 @@ namespace Minsk.ConsoleApp
         {
             var showTree = false;
             var variables = new Dictionary<VariableSymbol, object>();
+            var textBuilder = new StringBuilder();
+            var keepGoing = true;
 
-            while(true)
+            while(keepGoing)
             {
-                Console.Write("> ");
-
-                var line = Console.ReadLine();
-
-                if(string.IsNullOrWhiteSpace(line))
+                if(textBuilder.Length == 0)
                 {
-                    return;
+                    Console.Write("> ");
+                }
+                else
+                {
+                    Console.Write("| ");
                 }
 
-                if (line == "#showTree")
+                var input = Console.ReadLine();
+                var isBlank = string.IsNullOrWhiteSpace(input);
+
+                if (textBuilder.Length == 0)
                 {
-                    showTree = !showTree;
-                    Console.WriteLine(showTree ? "Showing parse tree." : "Not showing parse tree.");
+                    if(isBlank)
+                    {
+                        return;
+                    }
+                    switch (input)
+                    {
+                        case "#showTree":
+                            showTree = !showTree;
+                            Console.WriteLine(showTree ? "Showing parse tree." : "Not showing parse tree.");
+                            continue;
+                        case "#cls":
+                            Console.Clear();
+                            continue;
+                        case "#quit":
+                            keepGoing = false;
+                            break;
+                    }
+                }
+
+                textBuilder.AppendLine(input);
+                var text = textBuilder.ToString();
+
+                var syntaxTree = SyntaxTree.Parse(text);
+
+                if (!isBlank && syntaxTree.Diagnostics.Any())
+                {
                     continue;
                 }
-                if (line == "#cls")
-                {
-                    Console.Clear();
-                    continue;
-                }
-                if (line == "#quit")
-                {
-                    break;
-                }
 
-                var syntaxTree = SyntaxTree.Parse(line);
                 var compilation = new Compilation(syntaxTree);
                 var result = compilation.Evaluate(variables);
 
@@ -50,7 +71,7 @@ namespace Minsk.ConsoleApp
                 var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGray;
 
-                if(showTree) PrettyPrint(syntaxTree.Root);
+                if(showTree) syntaxTree.Root.WriteTo(Console.Out);
 
                 Console.ForegroundColor = color;
 
@@ -60,56 +81,42 @@ namespace Minsk.ConsoleApp
                 }
                 else
                 {
-
-                    foreach (var entry in diagnostics)
+                    foreach (var diagnostic in diagnostics)
                     {
+                        var lineIndex = syntaxTree.Text.GetLineIndex(diagnostic.Span.Start);
+                        var line = syntaxTree.Text.Lines[lineIndex];
+                        var lineNumber = lineIndex + 1;
+                        var character = diagnostic.Span.Start - line.Start + 1;
+
                         Console.WriteLine();
 
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(entry);
+                        Console.Write($"({lineNumber}, {character}): ");
+                        Console.WriteLine(diagnostic);
                         Console.ResetColor();
 
-                        var prefix = line.Substring(0, entry.Span.Start);
-                        var error = line.Substring(entry.Span.Start, entry.Span.Length);
-                        var suffix = line.Substring(entry.Span.End);
+                        var prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.Span.Start);
+                        var suffixSpan = TextSpan.FromBounds(diagnostic.Span.End, line.End);
+
+                        var prefix = syntaxTree.Text.ToString(prefixSpan);
+                        var error = syntaxTree.Text.ToString(diagnostic.Span);
+                        var suffix = syntaxTree.Text.ToString(suffixSpan);
 
                         Console.Write("    ");
                         Console.Write(prefix);
+
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write(error);
                         Console.ResetColor();
+
                         Console.Write(suffix);
                         Console.WriteLine();
                     }
 
                     Console.WriteLine();
                 }
-            }
-        }
 
-        private static void PrettyPrint(SyntaxNode node, string indent = "", bool isLast = true)
-        {
-            var marker = isLast ? "└── " : "├── ";
-
-            Console.Write(indent);
-            Console.Write(marker);
-            Console.Write(node.Kind);
-
-            if (node is SyntaxToken t && t.Value != null)
-            {
-                Console.Write(" ");
-                Console.Write(t.Value);
-            }
-
-            Console.WriteLine();
-
-            indent += isLast ? "    " : "│   ";
-
-            var lastChild = node.GetChildren().LastOrDefault();
-
-            foreach (var child in node.GetChildren())
-            {
-                PrettyPrint(child, indent, child == lastChild);
+                textBuilder.Clear();
             }
         }
     }

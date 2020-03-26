@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Minsk.Core.CodeAnalysis.Syntax
+﻿namespace Minsk.Core.CodeAnalysis.Syntax
 {
     public sealed class AssignmentExpressionSyntax : ExpressionSyntax
     {
@@ -15,13 +13,5 @@ namespace Minsk.Core.CodeAnalysis.Syntax
         public SyntaxToken EqualsToken { get; }
         public ExpressionSyntax Expression { get; }
         public override SyntaxKind Kind => SyntaxKind.AssignmentExpression;
-
-
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            yield return IdentifierToken;
-            yield return EqualsToken;
-            yield return Expression;
-        }
     }
 }
