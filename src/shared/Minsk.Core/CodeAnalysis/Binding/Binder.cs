@@ -67,6 +67,8 @@ namespace Minsk.Core.CodeAnalysis.Binding
                     return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax);
                 case SyntaxKind.IfStatement:
                     return BindIfStatement((IfStatementSyntax) syntax);
+                case SyntaxKind.WhileStatement:
+                    return BindWhileStatement((WhileStatementSyntax) syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -114,6 +116,14 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var elseClause = syntax.ElseClause == null ? null : BindStatement(syntax.ElseClause.ElseStatement);
 
             return new BoundIfStatement(condition, statement, elseClause);
+        }
+
+        private BoundStatement BindWhileStatement(WhileStatementSyntax syntax)
+        {
+            var condition = BindExpression(syntax.Condition, typeof(bool));
+            var statement = BindStatement(syntax.WhileStatement);
+
+            return new BoundWhileStatement(condition, statement);
         }
 
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)

@@ -61,6 +61,8 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return SyntaxKind.IfKeyword;
                 case "else":
                     return SyntaxKind.ElseKeyword;
+                case "while":
+                    return SyntaxKind.WhileKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -110,6 +112,8 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return "if";
                 case SyntaxKind.ElseKeyword:
                     return "else";
+                case SyntaxKind.WhileKeyword:
+                    return "while";
                 case SyntaxKind.LessThanToken:
                     return "<";
                 case SyntaxKind.LessThanOrEqualToken:

@@ -48,7 +48,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         [TestCase("{ var a = 0 if a == 5 a = 10 }", 0)]
         [TestCase("{ var a = 0 if a == 5 a = 10 else a = 20 }", 20)]
         [TestCase("{ var a = 0 if a == 0 a = 10 else a = 20 }", 10)]
-        //[TestCase("{ var a = 0 if (a == 0){ var b = 5 }}", 0)]
+        [TestCase("{ var a = 0 while (a < 9) a = a + 1 }", 9)]
         public void AccuratelyEvaluateExpressions(string text, object expected)
         {
             var expression = SyntaxTree.Parse(text);
