@@ -46,5 +46,120 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             Assert.That(evaluationResult.Value, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void Report_Redeclaration()
+        {
+            var text = @"
+            {
+                var x = 100
+                var y = 10
+                {
+                    var x = 10
+                }
+                var [x] = 5
+            }";
+
+            var expectedDiagnostic = "Variable 'x' is already declared";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void Report_UndefinedVariable()
+        {
+            var text = @"[a] + 10";
+
+            var expectedDiagnostic = "Variable 'a' doesn't exist";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void Report_CannotAssign()
+        {
+            var text = @"
+            {
+                let y = 10
+                y [=] 0
+            }
+            ";
+
+            var expectedDiagnostic = "Variable 'y' is readonly and cannot be assigned to";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void Report_CannotConvert()
+        {
+            var text = @"
+            {
+                var b = 10
+                [b] = false
+            }
+            ";
+
+            var expectedDiagnostic = "Cannot convert variable 'b' from <System.Int32> to <System.Boolean>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void Report_UndefinedUnaryOperator()
+        {
+            var text = @"[+]true";
+
+            var expectedDiagnostic = "Unary operator '+' is not defined for type <System.Boolean>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void Report_UndefinedBinaryOperator()
+        {
+            var text = @"1 [&&] true";
+
+            var expectedDiagnostic = "Binary operator '&&' is not defined for type <System.Int32> and <System.Boolean>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void Report_UnexpectedToken()
+        {
+            var text = @"1 [(] + 4";
+
+            var expectedDiagnostic = "ERROR: Unexpected token <OpenParensToken>, expected <EofToken>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        private void AssertHasDiagnostics(string text, string diagnosticText)
+        {
+            var annotatedText = AnnotatedText.Parse(text);
+            var syntaxTree = SyntaxTree.Parse(annotatedText.Text);
+            var compilation = new Compilation(syntaxTree);
+            var result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
+            var diagnostics = AnnotatedText.UnindentLines(diagnosticText);
+
+            if (annotatedText.Spans.Length != diagnostics.Length)
+            {
+                throw new Exception("Missing markers '[]'");
+            }
+
+            for (var i = 0; i < diagnostics.Length; i++)
+            {
+                var expectedDiagnostic = diagnostics[i];
+                var actualDiagnostic = result.Diagnostics[i].Message;
+
+                Assert.That(actualDiagnostic, Is.EqualTo(expectedDiagnostic));
+
+                var expectedSpan = annotatedText.Spans[i];
+                var actualSpan = result.Diagnostics[i].Span;
+
+                Assert.That(expectedSpan, Is.EqualTo(actualSpan));
+            }
+        }
     }
 }
