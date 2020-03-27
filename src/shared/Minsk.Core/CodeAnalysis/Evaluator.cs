@@ -34,6 +34,9 @@ namespace Minsk.Core.CodeAnalysis
                 case BoundNodeKind.VariableDeclarationStatement:
                     EvaluateVariableDeclarationStatement((BoundVariableDeclarationStatement)node);
                     break;
+                case BoundNodeKind.IfStatement:
+                    EvaluateIfStatement((BoundIfStatement)node);
+                    break;
                 case BoundNodeKind.ExpressionStatement:
                     EvaluateExpressionStatement((BoundExpressionStatement)node);
                     break;
@@ -56,6 +59,20 @@ namespace Minsk.Core.CodeAnalysis
             var initializerValue = EvaluateExpression(expression);
             _variables[node.Variable] = initializerValue;
             _lastValue = initializerValue;
+        }
+
+        private void EvaluateIfStatement(BoundIfStatement node)
+        {
+            var condition = (bool) EvaluateExpression(node.Condition);
+
+            if (condition)
+            {
+                EvaluateStatement(node.Statement);
+            }
+            else if (node.ElseClause != null)
+            {
+                EvaluateStatement(node.ElseClause);
+            }
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement node)

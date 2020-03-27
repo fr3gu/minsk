@@ -100,21 +100,11 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclarationStatement();
+                case SyntaxKind.IfKeyword:
+                    return ParseIfStatement();
                 default:
                     return ParseExpressionStatement();
             }
-        }
-
-        private StatementSyntax ParseVariableDeclarationStatement()
-        {
-            var expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
-
-            var keyword = MatchToken(expected);
-            var identifier = MatchToken(SyntaxKind.IdentifierToken);
-            var equalsToken = MatchToken(SyntaxKind.EqualsToken);
-            var initializer = ParseExpression();
-
-            return new VariableDeclarationStatementSyntax(keyword, identifier, equalsToken, initializer);
         }
 
         private BlockStatementSyntax ParseBlockStatement()
@@ -129,6 +119,38 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             var closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
 
             return new BlockStatementSyntax(openBraceToken, statements.ToImmutable(), closeBraceToken);
+        }
+
+        private StatementSyntax ParseVariableDeclarationStatement()
+        {
+            var expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
+
+            var keyword = MatchToken(expected);
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var equalsToken = MatchToken(SyntaxKind.EqualsToken);
+            var initializer = ParseExpression();
+
+            return new VariableDeclarationStatementSyntax(keyword, identifier, equalsToken, initializer);
+        }
+
+        private StatementSyntax ParseIfStatement()
+        {
+            var ifKeyword = MatchToken(SyntaxKind.IfKeyword);
+            var condition = ParseExpression();
+            var thenStatement = ParseStatement();
+            var elseClause = ParseElseClause();
+
+            return new IfStatementSyntax(ifKeyword, condition, thenStatement, elseClause);
+        }
+
+        private ElseClauseSyntax ParseElseClause()
+        {
+            if (Current.Kind != SyntaxKind.ElseKeyword) return null;
+
+            var keyword = NextToken();
+            var statement = ParseStatement();
+
+            return new ElseClauseSyntax(keyword, statement);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()

@@ -65,6 +65,8 @@ namespace Minsk.Core.CodeAnalysis.Binding
                     return BindBlockStatement((BlockStatementSyntax)syntax);
                 case SyntaxKind.VariableDeclarationStatement:
                     return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax);
+                case SyntaxKind.IfStatement:
+                    return BindIfStatement((IfStatementSyntax) syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -105,10 +107,31 @@ namespace Minsk.Core.CodeAnalysis.Binding
             return new BoundVariableDeclarationStatement(variable, initializer);
         }
 
+        private BoundStatement BindIfStatement(IfStatementSyntax syntax)
+        {
+            var condition = BindExpression(syntax.Condition, typeof(bool));
+            var statement = BindStatement(syntax.ThenStatement);
+            var elseClause = syntax.ElseClause == null ? null : BindStatement(syntax.ElseClause.ElseStatement);
+
+            return new BoundIfStatement(condition, statement, elseClause);
+        }
+
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
         {
             var expression = BindExpression(syntax.Expression);
             return new BoundExpressionStatement(expression);
+        }
+
+        private BoundExpression BindExpression(ExpressionSyntax syntax, Type targetType)
+        {
+            var expression = BindExpression(syntax);
+
+            if (expression.Type != targetType)
+            {
+                Diagnostics.ReportCannotConvert(syntax.Span, expression.Type, targetType);
+            }
+
+            return expression;
         }
 
         private BoundExpression BindExpression(ExpressionSyntax syntax)
@@ -176,7 +199,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
 
             if (boundExpression.Type != variable.Type)
             {
-                Diagnostics.ReportCannotConvert(syntax.IdentifierToken.Span, name, boundExpression.Type, variable.Type);
+                Diagnostics.ReportCannotConvert(syntax.IdentifierToken.Span, boundExpression.Type, variable.Type);
                 return boundExpression;
             }
 
