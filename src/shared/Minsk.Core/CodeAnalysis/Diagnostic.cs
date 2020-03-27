@@ -58,13 +58,13 @@ namespace Minsk.Core.CodeAnalysis
 
         public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
         {
-            var message = $"Unary operator '{operatorText}' is not defined for type {operandType}";
+            var message = $"Unary operator '{operatorText}' is not defined for type <{operandType}>";
             Report(span, message);
         }
 
         public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftOperandType, Type rightOperandType)
         {
-            var message = $"Binary operator '{operatorText}' is not defined for type {leftOperandType} and {rightOperandType}";
+            var message = $"Binary operator '{operatorText}' is not defined for type <{leftOperandType}> and <{rightOperandType}>";
             Report(span, message);
         }
 
@@ -82,7 +82,7 @@ namespace Minsk.Core.CodeAnalysis
 
         public void ReportVariableAlreadyDeclared(TextSpan span, string name)
         {
-            var message = $"Variable '{name}' is already declared exist";
+            var message = $"Variable '{name}' is already declared";
             Report(span, message);
         }
 
