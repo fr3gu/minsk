@@ -33,6 +33,16 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         [TestCase("true && false", false)]
         [TestCase("false || true", true)]
         [TestCase("false || false", false)]
+        [TestCase(" 1 < 3", true)]
+        [TestCase(" 1 > 3", false)]
+        [TestCase(" 3 > 1", true)]
+        [TestCase(" 3 < 1", false)]
+        [TestCase(" 3 >= 1", true)]
+        [TestCase(" 3 >= 3", true)]
+        [TestCase(" 3 >= 5", false)]
+        [TestCase(" 1 <= 2", true)]
+        [TestCase(" 2 <= 2", true)]
+        [TestCase(" 5 <= 2", false)]
         [TestCase("{ var a = 0 (a = 10) * a}", 100)]
         public void AccuratelyEvaluateExpressions(string text, object expected)
         {

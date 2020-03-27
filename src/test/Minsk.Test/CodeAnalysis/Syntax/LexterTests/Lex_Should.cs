@@ -144,6 +144,16 @@ namespace Minsk.Test.CodeAnalysis.Syntax.LexterTests
                 return true;
             }
 
+            if (t1Kind == SyntaxKind.LessThanToken && unabletopairwithEquals.Contains(t2Kind))
+            {
+                return true;
+            }
+
+            if (t1Kind == SyntaxKind.GreaterThanToken && unabletopairwithEquals.Contains(t2Kind))
+            {
+                return true;
+            }
+
             return false;
         }
 
