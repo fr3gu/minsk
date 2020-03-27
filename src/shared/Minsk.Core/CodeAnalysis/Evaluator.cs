@@ -141,6 +141,14 @@ namespace Minsk.Core.CodeAnalysis
                     return Equals(left, right);
                 case BoundBinaryOperatorKind.NotEquals:
                     return !Equals(left, right);
+                case BoundBinaryOperatorKind.LessThan:
+                    return (int)left < (int)right;
+                case BoundBinaryOperatorKind.LessThanOrEqual:
+                    return (int)left <= (int)right;
+                case BoundBinaryOperatorKind.GreaterThan:
+                    return (int)left > (int)right;
+                case BoundBinaryOperatorKind.GreaterThanOrEqual:
+                    return (int)left >= (int)right;
                 default:
                     throw new Exception($"Unexpected binary operator {b.Op}");
             }

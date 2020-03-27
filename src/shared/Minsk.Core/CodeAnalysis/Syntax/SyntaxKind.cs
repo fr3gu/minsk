@@ -22,6 +22,10 @@
         BangEqualsToken,
         EqualsToken,
         IdentifierToken,
+        LessThanToken,
+        LessThanOrEqualToken,
+        GreaterThanToken,
+        GreaterThanOrEqualToken,
 
         // Keywords
         FalseKeyword,

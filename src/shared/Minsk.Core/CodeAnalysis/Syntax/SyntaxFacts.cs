@@ -18,6 +18,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return 4;
                 case SyntaxKind.BangEqualsToken:
                 case SyntaxKind.EqualsEqualsToken:
+                case SyntaxKind.LessThanToken:
+                case SyntaxKind.LessThanOrEqualToken:
+                case SyntaxKind.GreaterThanToken:
+                case SyntaxKind.GreaterThanOrEqualToken:
                     return 3;
                 case SyntaxKind.AmpersandAmpersandToken:
                     return 2;
@@ -98,6 +102,14 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return "let";
                 case SyntaxKind.VarKeyword:
                     return "var";
+                case SyntaxKind.LessThanToken:
+                    return "<";
+                case SyntaxKind.LessThanOrEqualToken:
+                    return "<=";
+                case SyntaxKind.GreaterThanToken:
+                    return ">";
+                case SyntaxKind.GreaterThanOrEqualToken:
+                    return ">=";
                 default:
                     return null;
             }
