@@ -110,7 +110,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             }
             ";
 
-            var expectedDiagnostic = "Cannot convert variable 'b' from <System.Int32> to <System.Boolean>";
+            var expectedDiagnostic = "Cannot convert from <System.Int32> to <System.Boolean>";
 
             AssertHasDiagnostics(text, expectedDiagnostic);
         }
