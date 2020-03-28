@@ -69,6 +69,8 @@ namespace Minsk.Core.CodeAnalysis.Binding
                     return BindIfStatement((IfStatementSyntax) syntax);
                 case SyntaxKind.WhileStatement:
                     return BindWhileStatement((WhileStatementSyntax) syntax);
+                case SyntaxKind.ForStatement:
+                    return BindForStatement((ForStatementSyntax)syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -126,6 +128,27 @@ namespace Minsk.Core.CodeAnalysis.Binding
             return new BoundWhileStatement(condition, statement);
         }
 
+        private BoundStatement BindForStatement(ForStatementSyntax syntax)
+        {
+            var lowerBound = BindExpression(syntax.LowerBound, typeof(int));
+            var upperBound = BindExpression(syntax.UpperBound, typeof(int));
+
+            var name = syntax.Identifier.Text;
+            var variable = new VariableSymbol(name, false, typeof(int));
+
+            _scope = new BoundScope(_scope);
+            if (!_scope.TryDeclare(variable))
+            {
+                Diagnostics.ReportCannotAssign(syntax.Identifier.Span, name);
+            }
+
+            var body = BindStatement(syntax.Body);
+
+            _scope = _scope.Parent;
+
+            return new BoundForStatement(variable, lowerBound, upperBound, body);
+        }
+
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
         {
             var expression = BindExpression(syntax.Expression);
@@ -179,7 +202,6 @@ namespace Minsk.Core.CodeAnalysis.Binding
         private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
         {
             var name = syntax.IdentifierToken.Text;
-            //var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
 
             if (!_scope.TryLookup(name, out var variable))
             {
