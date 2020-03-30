@@ -74,7 +74,7 @@ namespace Minsk.Core.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportCannotConvert(TextSpan span, Type toType, Type fromType)
+        public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
         {
             var message = $"Cannot convert from <{fromType}> to <{toType}>";
             Report(span, message);

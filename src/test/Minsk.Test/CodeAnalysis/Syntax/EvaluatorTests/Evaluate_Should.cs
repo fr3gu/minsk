@@ -117,7 +117,74 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             }
             ";
 
+            var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void IfStatement_Report_CannotConvert()
+        {
+            var text = @"
+            {
+                var x = 0
+                if [10]
+                    x = 10
+            }
+            ";
+
             var expectedDiagnostic = "Cannot convert from <System.Int32> to <System.Boolean>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void WhileStatement_Report_CannotConvert()
+        {
+            var text = @"
+            {
+                var x = 0
+                var result = 0
+                while [10]
+                    result = result + x
+            }
+            ";
+
+            var expectedDiagnostic = "Cannot convert from <System.Int32> to <System.Boolean>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void ForStatement_Report_CannotConvert_ForLowerBound()
+        {
+            var text = @"
+            {
+                var x = 0
+                var result = 0
+                for x = [false] to 10
+                    result = result + x
+            }
+            ";
+
+            var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void ForStatement_Report_CannotConvert_ForUpperBound()
+        {
+            var text = @"
+            {
+                var x = 0
+                var result = 0
+                for x = 10 to [false]
+                    result = result + x
+            }
+            ";
+
+            var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
 
             AssertHasDiagnostics(text, expectedDiagnostic);
         }
