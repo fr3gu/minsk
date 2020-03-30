@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.Core.CodeAnalysis.Syntax
@@ -173,13 +174,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     break;
             }
 
-            var text2 = _kind.GetText();
-            if (text2 == null)
-            {
-                var length = _position - _start;
-                text2 = _text.ToString(_start, length);
-            }
-            return new SyntaxToken(_kind, _start, text2, _value);
+            var length = _position - _start;
+            var text = _kind.GetText() ?? _text.ToString(_start, length);
+
+            return new SyntaxToken(_kind, _start, text, _value);
         }
 
         private void ReadWhiteSpace()

@@ -32,7 +32,6 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
         public Parser(SourceText text)
         {
-            _text = text;
             Diagnostics = new DiagnosticsBag();
             var lexer = new Lexer(text);
             SyntaxToken token;
@@ -50,6 +49,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
             } while (token.Kind != SyntaxKind.EofToken);
 
+            _text = text;
             _tokens = tokens.ToImmutableArray();
 
             Diagnostics.AddRange(lexer.Diagnostics);
@@ -91,7 +91,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             return new CompilationUnitSyntax(statement, eofToken);
         }
 
-        public StatementSyntax ParseStatement()
+        private StatementSyntax ParseStatement()
         {
             switch (Current.Kind)
             {
@@ -151,34 +151,12 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
         private StatementSyntax ParseIfStatement()
         {
-            var ifKeyword = MatchToken(SyntaxKind.IfKeyword);
+            var keyword = MatchToken(SyntaxKind.IfKeyword);
             var condition = ParseExpression();
             var thenStatement = ParseStatement();
             var elseClause = ParseElseClause();
 
-            return new IfStatementSyntax(ifKeyword, condition, thenStatement, elseClause);
-        }
-
-        private StatementSyntax ParseForStatement()
-        {
-            var forKeyword = MatchToken(SyntaxKind.ForKeyword);
-            var identifier = MatchToken(SyntaxKind.IdentifierToken);
-            var equals = MatchToken(SyntaxKind.EqualsToken);
-            var lowerBound = ParseExpression();
-            var toKeyword = MatchToken(SyntaxKind.ToKeyword);
-            var upperBound = ParseExpression();
-            var body = ParseStatement();
-
-            return new ForStatementSyntax(forKeyword, identifier, equals, lowerBound, toKeyword, upperBound, body);
-        }
-
-        private StatementSyntax ParseWhileStatement()
-        {
-            var whileKeyword = MatchToken(SyntaxKind.WhileKeyword);
-            var condition = ParseExpression();
-            var whileStatement = ParseStatement();
-
-            return new WhileStatementSyntax(whileKeyword, condition, whileStatement);
+            return new IfStatementSyntax(keyword, condition, thenStatement, elseClause);
         }
 
         private ElseClauseSyntax ParseElseClause()
@@ -189,6 +167,28 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             var statement = ParseStatement();
 
             return new ElseClauseSyntax(keyword, statement);
+        }
+
+        private StatementSyntax ParseWhileStatement()
+        {
+            var keyword = MatchToken(SyntaxKind.WhileKeyword);
+            var condition = ParseExpression();
+            var body = ParseStatement();
+
+            return new WhileStatementSyntax(keyword, condition, body);
+        }
+
+        private StatementSyntax ParseForStatement()
+        {
+            var keyword = MatchToken(SyntaxKind.ForKeyword);
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var equalsToken = MatchToken(SyntaxKind.EqualsToken);
+            var lowerBound = ParseExpression();
+            var toKeyword = MatchToken(SyntaxKind.ToKeyword);
+            var upperBound = ParseExpression();
+            var body = ParseStatement();
+
+            return new ForStatementSyntax(keyword, identifier, equalsToken, lowerBound, toKeyword, upperBound, body);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()
@@ -255,10 +255,9 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 case SyntaxKind.OpenParensToken:
                     return ParseParenthesizedExpression();
 
-                case SyntaxKind.TrueKeyword:
                 case SyntaxKind.FalseKeyword:
+                case SyntaxKind.TrueKeyword:
                     return ParseBooleanLiteral();
-
                 case SyntaxKind.NumberToken:
                     return ParseNumberLiteral();
 
@@ -270,7 +269,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
         private ExpressionSyntax ParseParenthesizedExpression()
         {
-            var left = NextToken();
+            var left = MatchToken(SyntaxKind.OpenParensToken);
             var expression = ParseExpression();
             var right = MatchToken(SyntaxKind.CloseParensToken);
 

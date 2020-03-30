@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Minsk.Core.CodeAnalysis.Syntax;
 
 namespace Minsk.Core.CodeAnalysis.Binding
@@ -15,6 +14,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         public Binder(BoundScope parent)
         {
             Diagnostics = new DiagnosticsBag();
+
             _scope = new BoundScope(parent);
         }
 
@@ -25,6 +25,8 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var expression = binder.BindStatement(syntax.Statement);
             var variables = binder._scope.GetDeclaredVariables();
             var diagnostics = binder.Diagnostics.ToImmutableArray();
+
+            if (previous != null) diagnostics.InsertRange(0, previous.Diagnostics);
 
             return new BoundGlobalScope(previous, diagnostics, variables, expression);
         }
@@ -114,18 +116,18 @@ namespace Minsk.Core.CodeAnalysis.Binding
         private BoundStatement BindIfStatement(IfStatementSyntax syntax)
         {
             var condition = BindExpression(syntax.Condition, typeof(bool));
-            var statement = BindStatement(syntax.ThenStatement);
-            var elseClause = syntax.ElseClause == null ? null : BindStatement(syntax.ElseClause.ElseStatement);
+            var thenStatement = BindStatement(syntax.ThenStatement);
+            var elseStatement = syntax.ElseClause == null ? null : BindStatement(syntax.ElseClause.ElseStatement);
 
-            return new BoundIfStatement(condition, statement, elseClause);
+            return new BoundIfStatement(condition, thenStatement, elseStatement);
         }
 
         private BoundStatement BindWhileStatement(WhileStatementSyntax syntax)
         {
             var condition = BindExpression(syntax.Condition, typeof(bool));
-            var statement = BindStatement(syntax.WhileStatement);
+            var body = BindStatement(syntax.Body);
 
-            return new BoundWhileStatement(condition, statement);
+            return new BoundWhileStatement(condition, body);
         }
 
         private BoundStatement BindForStatement(ForStatementSyntax syntax)
@@ -133,10 +135,11 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var lowerBound = BindExpression(syntax.LowerBound, typeof(int));
             var upperBound = BindExpression(syntax.UpperBound, typeof(int));
 
-            var name = syntax.Identifier.Text;
-            var variable = new VariableSymbol(name, false, typeof(int));
-
             _scope = new BoundScope(_scope);
+
+            var name = syntax.Identifier.Text;
+            var variable = new VariableSymbol(name, true, typeof(int));
+
             if (!_scope.TryDeclare(variable))
             {
                 Diagnostics.ReportCannotAssign(syntax.Identifier.Span, name);
@@ -219,7 +222,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
                 return new BoundLiteralExpression(0);
             }
 
-            return BindVariableExpression(variable);
+            return new BoundVariableExpression(variable);
         }
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
@@ -236,7 +239,6 @@ namespace Minsk.Core.CodeAnalysis.Binding
             if (variable.IsReadonly)
             {
                 Diagnostics.ReportCannotAssign(syntax.EqualsToken.Span, name);
-                return boundExpression;
             }
 
             if (boundExpression.Type != variable.Type)
@@ -268,17 +270,14 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var boundRight = BindExpression(syntax.Right);
             var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
 
-            if (boundOperator != null)
-                return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
+            if (boundOperator == null)
+            {
+                Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
+                return boundLeft;
+            }
 
-            Diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
-            return boundLeft;
+            return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
 
-        }
-
-        private BoundExpression BindVariableExpression(VariableSymbol variable)
-        {
-            return new BoundVariableExpression(variable);
         }
     }
 }

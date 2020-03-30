@@ -4,13 +4,13 @@
     {
         public SyntaxToken WhileKeyword { get; }
         public ExpressionSyntax Condition { get; }
-        public StatementSyntax WhileStatement { get; }
+        public StatementSyntax Body { get; }
 
-        public WhileStatementSyntax(SyntaxToken whileKeyword, ExpressionSyntax condition, StatementSyntax whileStatement)
+        public WhileStatementSyntax(SyntaxToken whileKeyword, ExpressionSyntax condition, StatementSyntax body)
         {
             WhileKeyword = whileKeyword;
             Condition = condition;
-            WhileStatement = whileStatement;
+            Body = body;
         }
 
         public override SyntaxKind Kind => SyntaxKind.WhileStatement;
