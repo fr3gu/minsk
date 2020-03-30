@@ -219,6 +219,16 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             AssertHasDiagnostics(text, expectedDiagnostic);
         }
 
+        [Test]
+        public void ReportUnexpectedToken_GivenEmptyExpression()
+        {
+            var text = @"[]";
+
+            var expectedDiagnostic = "ERROR: Unexpected token <EofToken>, expected <IdentifierToken>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
         private void AssertHasDiagnostics(string text, string diagnosticText)
         {
             var annotatedText = AnnotatedText.Parse(text);

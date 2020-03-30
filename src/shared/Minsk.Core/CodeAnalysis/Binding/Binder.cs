@@ -203,6 +203,16 @@ namespace Minsk.Core.CodeAnalysis.Binding
         {
             var name = syntax.IdentifierToken.Text;
 
+            if (string.IsNullOrEmpty(name))
+            {
+                // If we get here we ended up on a
+                // syntactic token, inserted by the parser
+                // Error has been reported already so we just
+                // return an error expression
+
+                return new BoundLiteralExpression(0);
+            }
+
             if (!_scope.TryLookup(name, out var variable))
             {
                 Diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
