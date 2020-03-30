@@ -83,7 +83,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void Report_UndefinedVariable()
+        public void ReportUndefinedVariable_GivenUndefinedVariable()
         {
             var text = @"[a] + 10";
 
@@ -93,7 +93,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void Report_CannotAssign()
+        public void ReportCannotAssign_GivenAssignmentExpressionWithReadonlyVariable()
         {
             var text = @"
             {
@@ -108,7 +108,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void Report_CannotConvert()
+        public void ReportCannotConvert_GivenAssignmentExpressionWithIntVariableAndBoolValue()
         {
             var text = @"
             {
@@ -123,7 +123,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void IfStatement_Report_CannotConvert()
+        public void ReportCannotConvert_Given_IfStatement()
         {
             var text = @"
             {
@@ -139,7 +139,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void WhileStatement_Report_CannotConvert()
+        public void ReportCannotConvert_Given_WhileStatement()
         {
             var text = @"
             {
@@ -156,7 +156,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void ForStatement_Report_CannotConvert_ForLowerBound()
+        public void ReportCannotConvert_ForLowerBound_GivenForStatement()
         {
             var text = @"
             {
@@ -173,7 +173,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void ForStatement_Report_CannotConvert_ForUpperBound()
+        public void ReportCannotConvert_ForUpperBound_GivenForStatement()
         {
             var text = @"
             {
@@ -190,7 +190,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void Report_UndefinedUnaryOperator()
+        public void ReportUndefinedUnaryOperator_GivenUnaryExpression()
         {
             var text = @"[+]true";
 
@@ -200,7 +200,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void Report_UndefinedBinaryOperator()
+        public void ReportUndefinedBinaryOperator_GivenBinaryExpression()
         {
             var text = @"1 [&&] true";
 
