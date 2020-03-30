@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.Core.CodeAnalysis.Syntax
@@ -113,7 +114,30 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                         _kind = SyntaxKind.BangEqualsToken;
                         _position++;
                     }
-
+                    break;
+                case '<':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.LessThanToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.LessThanOrEqualToken;
+                        _position++;
+                    }
+                    break;
+                case '>':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.GreaterThanToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.GreaterThanOrEqualToken;
+                        _position++;
+                    }
                     break;
                 case '0':
                 case '1':
@@ -150,13 +174,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     break;
             }
 
-            var text2 = _kind.GetText();
-            if (text2 == null)
-            {
-                var length = _position - _start;
-                text2 = _text.ToString(_start, length);
-            }
-            return new SyntaxToken(_kind, _start, text2, _value);
+            var length = _position - _start;
+            var text = _kind.GetText() ?? _text.ToString(_start, length);
+
+            return new SyntaxToken(_kind, _start, text, _value);
         }
 
         private void ReadWhiteSpace()

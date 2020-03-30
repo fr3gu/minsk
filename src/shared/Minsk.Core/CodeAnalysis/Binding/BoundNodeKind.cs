@@ -6,6 +6,9 @@
         BlockStatement,
         ExpressionStatement,
         VariableDeclarationStatement,
+        IfStatement,
+        WhileStatement,
+        ForStatement,
 
         // Expressions
         UnaryExpression,

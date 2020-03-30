@@ -99,8 +99,8 @@ namespace Minsk.Test
                     continue;
                 }
 
-                var indentation = line.Length - line.Trim().Length;
-                minIndentation = Math.Min(indentation, minIndentation);
+                var indentation = line.Length - line.TrimStart().Length;
+                minIndentation = Math.Min(minIndentation, indentation);
             }
 
             for (var i = 0; i < lines.Count; i++)

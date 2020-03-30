@@ -18,6 +18,10 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return 4;
                 case SyntaxKind.BangEqualsToken:
                 case SyntaxKind.EqualsEqualsToken:
+                case SyntaxKind.LessThanToken:
+                case SyntaxKind.LessThanOrEqualToken:
+                case SyntaxKind.GreaterThanToken:
+                case SyntaxKind.GreaterThanOrEqualToken:
                     return 3;
                 case SyntaxKind.AmpersandAmpersandToken:
                     return 2;
@@ -53,6 +57,16 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return SyntaxKind.LetKeyword;
                 case "var":
                     return SyntaxKind.VarKeyword;
+                case "if":
+                    return SyntaxKind.IfKeyword;
+                case "else":
+                    return SyntaxKind.ElseKeyword;
+                case "while":
+                    return SyntaxKind.WhileKeyword;
+                case "for":
+                    return SyntaxKind.ForKeyword;
+                case "to":
+                    return SyntaxKind.ToKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -98,6 +112,24 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                     return "let";
                 case SyntaxKind.VarKeyword:
                     return "var";
+                case SyntaxKind.IfKeyword:
+                    return "if";
+                case SyntaxKind.ElseKeyword:
+                    return "else";
+                case SyntaxKind.WhileKeyword:
+                    return "while";
+                case SyntaxKind.ForKeyword:
+                    return "for";
+                case SyntaxKind.ToKeyword:
+                    return "to";
+                case SyntaxKind.LessThanToken:
+                    return "<";
+                case SyntaxKind.LessThanOrEqualToken:
+                    return "<=";
+                case SyntaxKind.GreaterThanToken:
+                    return ">";
+                case SyntaxKind.GreaterThanOrEqualToken:
+                    return ">=";
                 default:
                     return null;
             }

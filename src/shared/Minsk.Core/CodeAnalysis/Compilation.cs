@@ -21,7 +21,7 @@ namespace Minsk.Core.CodeAnalysis
 
         private Compilation(Compilation previous, SyntaxTree syntaxTree)
         {
-            _globalScope = null;
+            //_globalScope = null;
             Previous = previous;
             SyntaxTree = syntaxTree;
         }
