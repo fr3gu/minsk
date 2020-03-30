@@ -43,6 +43,8 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         [TestCase(" 1 <= 2", true)]
         [TestCase(" 2 <= 2", true)]
         [TestCase(" 5 <= 2", false)]
+        [TestCase("var a = 10", 10)]
+        [TestCase("{ var a = 10 a * a }", 100)]
         [TestCase("{ var a = 0 (a = 10) * a }", 100)]
         [TestCase("{ var a = 0 if a == 0 a = 10 }", 10)]
         [TestCase("{ var a = 0 if a == 5 a = 10 }", 0)]
@@ -240,6 +242,16 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             var text = @"[]";
 
             var expectedDiagnostic = "ERROR: Unexpected token <EofToken>, expected <IdentifierToken>";
+
+            AssertHasDiagnostics(text, expectedDiagnostic);
+        }
+
+        [Test]
+        public void ReportInvalidNumber_GivenLongNumber()
+        {
+            var text = @"var a = [124654541321534154153151]";
+
+            var expectedDiagnostic = "The number 124654541321534154153151 isn't valid <System.Int32>";
 
             AssertHasDiagnostics(text, expectedDiagnostic);
         }

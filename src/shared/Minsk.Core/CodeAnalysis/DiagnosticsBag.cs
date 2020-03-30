@@ -21,7 +21,7 @@ namespace Minsk.Core.CodeAnalysis
 
         public void ReportInvalidNumber(TextSpan span, string text, Type type)
         {
-            Report(span, $"The number {text} isn't valid {type}");
+            Report(span, $"The number {text} isn't valid <{type}>");
         }
 
         public void ReportBadCharacter(int position, char current)
