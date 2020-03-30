@@ -16,7 +16,9 @@
         OpenBraceToken,
         CloseBraceToken,
         BangToken,
+        AmpersandToken,
         AmpersandAmpersandToken,
+        PipeToken,
         PipePipeToken,
         EqualsEqualsToken,
         BangEqualsToken,
@@ -26,6 +28,8 @@
         LessThanOrEqualToken,
         GreaterThanToken,
         GreaterThanOrEqualToken,
+        HatToken,
+        TildeToken,
 
         // Keywords
         FalseKeyword,

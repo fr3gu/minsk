@@ -154,6 +154,28 @@ namespace Minsk.Test.CodeAnalysis.Syntax.LexterTests
                 return true;
             }
 
+            var unabletopairwithAmpersand = new List<SyntaxKind>
+            {
+                SyntaxKind.AmpersandAmpersandToken,
+                SyntaxKind.AmpersandToken
+            };
+
+            if (t1Kind == SyntaxKind.AmpersandToken && unabletopairwithAmpersand.Contains(t2Kind))
+            {
+                return true;
+            }
+
+            var unabletopairwithPipe = new List<SyntaxKind>
+            {
+                SyntaxKind.PipePipeToken,
+                SyntaxKind.PipeToken
+            };
+
+            if (t1Kind == SyntaxKind.PipeToken && unabletopairwithPipe.Contains(t2Kind))
+            {
+                return true;
+            }
+
             return false;
         }
 

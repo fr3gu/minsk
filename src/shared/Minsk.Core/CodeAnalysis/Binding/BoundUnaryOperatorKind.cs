@@ -4,6 +4,7 @@
     {
         Identity,
         Negation,
-        LogicalNegation
+        LogicalNegation,
+        BitwiseNegation
     }
 }
