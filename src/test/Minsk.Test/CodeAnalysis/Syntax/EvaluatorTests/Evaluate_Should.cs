@@ -65,7 +65,22 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         }
 
         [Test]
-        public void Report_Redeclaration()
+        public void NotEndUpInInfiniteLoop_GivenIncompleteStatement()
+        {
+            var text = @"
+                {
+                    [)][]
+            ";
+
+            var diagnostics = @"
+                ERROR: Unexpected token <CloseParensToken>, expected <IdentifierToken>
+                ERROR: Unexpected token <EofToken>, expected <CloseBraceToken>
+            ";
+            AssertHasDiagnostics(text, diagnostics);
+        }
+
+        [Test]
+        public void ReportRedeclaration_Given_AssignmentExpression()
         {
             var text = @"
             {
@@ -237,9 +252,21 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             var result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
             var diagnostics = AnnotatedText.UnindentLines(diagnosticText);
 
-            if (annotatedText.Spans.Length != diagnostics.Length)
+            var annotationsCount = annotatedText.Spans.Length;
+            var actualDiagsCount = result.Diagnostics.Length;
+            if (annotationsCount < actualDiagsCount)
             {
-                throw new Exception("Missing markers '[]'");
+                throw new Exception($"Too few markers '[]'. Found {annotationsCount}, expected {actualDiagsCount}");
+            }
+
+            if (annotationsCount > actualDiagsCount)
+            {
+                throw new Exception($"Too many markers '[]'. Found {annotationsCount}, expected {actualDiagsCount}");
+            }
+
+            if (annotationsCount != diagnostics.Length)
+            {
+                throw new Exception($"Inconsisten number of '[]' and expected diagnostics. Found {diagnostics.Length} diagnostics, expected {annotationsCount} based on number of '[]'");
             }
 
             for (var i = 0; i < diagnostics.Length; i++)

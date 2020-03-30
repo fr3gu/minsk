@@ -99,8 +99,8 @@ namespace Minsk.Test
                     continue;
                 }
 
-                var indentation = line.Length - line.Trim().Length;
-                minIndentation = Math.Min(indentation, minIndentation);
+                var indentation = line.Length - line.TrimStart().Length;
+                minIndentation = Math.Min(minIndentation, indentation);
             }
 
             for (var i = 0; i < lines.Count; i++)
@@ -113,7 +113,7 @@ namespace Minsk.Test
             while (lines.Count > 0 && lines[0].Length == 0)
                 lines.RemoveAt(0);
 
-            while (lines.Count > 0 && lines[^1].Length == 0)
+            while (lines.Count > 0 && lines[lines.Count - 1].Length == 0)
                 lines.RemoveAt(lines.Count - 1);
 
             return lines.ToArray();
