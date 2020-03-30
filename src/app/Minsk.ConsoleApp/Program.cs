@@ -14,6 +14,7 @@ namespace Minsk.ConsoleApp
         private static void Main()
         {
             var showTree = false;
+            var showProgram = false;
             var variables = new Dictionary<VariableSymbol, object>();
             var textBuilder = new StringBuilder();
             Compilation previous = null;
@@ -49,6 +50,10 @@ namespace Minsk.ConsoleApp
                             showTree = !showTree;
                             Console.WriteLine(showTree ? "Showing parse tree." : "Not showing parse tree.");
                             continue;
+                        case "#showProgram":
+                            showProgram = !showProgram;
+                            Console.WriteLine(showProgram ? "Showing program." : "Not showing program.");
+                            continue;
                         case "#cls":
                             Console.Clear();
                             continue;
@@ -80,6 +85,8 @@ namespace Minsk.ConsoleApp
                 Console.ForegroundColor = ConsoleColor.DarkGray;
 
                 if(showTree) syntaxTree.Root.WriteTo(Console.Out);
+
+                if (showProgram) compilation.EmitTree(Console.Out);
 
                 Console.ForegroundColor = color;
 

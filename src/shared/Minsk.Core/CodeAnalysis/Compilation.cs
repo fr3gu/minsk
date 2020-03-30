@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Minsk.Core.CodeAnalysis.Binding;
@@ -57,6 +58,11 @@ namespace Minsk.Core.CodeAnalysis
             var value = evaluator.Evaluate();
 
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
+        }
+
+        public void EmitTree(TextWriter writer)
+        {
+            _globalScope.Statement.WriteTo(writer);
         }
     }
 }
