@@ -10,8 +10,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         private BoundScope _scope;
         public DiagnosticsBag Diagnostics { get; }
 
-
-        public Binder(BoundScope parent)
+        private Binder(BoundScope parent)
         {
             Diagnostics = new DiagnosticsBag();
 
