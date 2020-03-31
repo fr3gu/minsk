@@ -53,7 +53,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
             {
                 var oldStatement = node.Statements[i];
                 var newStatement = RewriteStatement(oldStatement);
-                if (!newStatement.Equals(oldStatement))
+                if (newStatement != oldStatement)
                 {
                     if (builder == null)
                     {
@@ -75,7 +75,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         protected virtual BoundStatement RewriteExpressionStatement(BoundExpressionStatement node)
         {
             var expression = RewriteExpression(node.Expression);
-            if (expression.Equals(node.Expression))
+            if (expression == node.Expression)
             {
                 return node;
             }
@@ -87,7 +87,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         {
             var initializer = RewriteExpression(node.Initializer);
 
-            if(initializer.Equals(node.Initializer))
+            if(initializer == node.Initializer)
             {
                 return node;
             }
@@ -101,7 +101,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var thenStatement = RewriteStatement(node.Statement);
             var elseClause = node.ElseClause == null ? null : RewriteStatement(node.ElseClause);
 
-            if (condition.Equals(node.Condition) && thenStatement.Equals(node.Statement) && elseClause.Equals(node.ElseClause))
+            if (condition == node.Condition && thenStatement == node.Statement && elseClause == node.ElseClause)
             {
                 return node;
             }
@@ -114,7 +114,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var condition = RewriteExpression(node.Condition);
             var body = RewriteStatement(node.Statement);
 
-            if (condition.Equals(node.Condition) && body.Equals(node.Statement))
+            if (condition == node.Condition && body == node.Statement)
             {
                 return node;
             }
@@ -128,7 +128,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
             var upperBound = RewriteExpression(node.UpperBound);
             var body = RewriteStatement(node.Body);
 
-            if (lowerBound.Equals(node.LowerBound) && upperBound.Equals(node.UpperBound) && body.Equals(node.Body))
+            if (lowerBound == node.LowerBound && upperBound == node.UpperBound && body == node.Body)
             {
                 return node;
             }
@@ -149,7 +149,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         protected virtual BoundExpression RewriteAssignmentExpression(BoundAssignmentExpression node)
         {
             var expression = RewriteExpression(node.Expression);
-            if(expression.Equals(node.Expression))
+            if(expression == node.Expression)
             {
                 return node;
             }
@@ -160,7 +160,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         protected virtual BoundExpression RewriteUnaryExpression(BoundUnaryExpression node)
         {
             var operand = RewriteExpression(node.Operand);
-            if (operand.Equals(node.Operand))
+            if (operand == node.Operand)
             {
                 return node;
             }
@@ -172,7 +172,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         {
             var left = RewriteExpression(node.Left);
             var right = RewriteExpression(node.Right);
-            if (left.Equals(node.Left) && right.Equals(node.Right))
+            if (left == node.Left && right == node.Right)
             {
                 return node;
             }
