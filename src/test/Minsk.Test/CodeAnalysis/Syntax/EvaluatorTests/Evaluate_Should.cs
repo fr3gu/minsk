@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Minsk.Core.CodeAnalysis;
 using Minsk.Core.CodeAnalysis.Syntax;
+using Minsk.Test.NUnit;
 using NUnit.Framework;
+using Has = Minsk.Test.NUnit.Has;
 
 namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 {
@@ -91,11 +92,12 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
                     [)][]
             ";
 
-            var diagnostics = @"
+            var expectedDiagnostics = @"
                 ERROR: Unexpected token <CloseParensToken>, expected <IdentifierToken>
                 ERROR: Unexpected token <EofToken>, expected <CloseBraceToken>
             ";
-            AssertHasDiagnostics(text, diagnostics);
+
+            Assert.That(text, Has.Diagnostics(expectedDiagnostics));
         }
 
         [Test]
@@ -113,7 +115,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Variable 'x' is already declared";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -123,7 +125,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Variable 'a' doesn't exist";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -138,7 +140,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Variable 'y' is readonly and cannot be assigned to";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -153,7 +155,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -169,7 +171,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Cannot convert from <System.Int32> to <System.Boolean>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -186,7 +188,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Cannot convert from <System.Int32> to <System.Boolean>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -203,7 +205,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -220,7 +222,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -230,7 +232,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Unary operator '+' is not defined for type <System.Boolean>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -240,7 +242,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "Binary operator '&&' is not defined for type <System.Int32> and <System.Boolean>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -250,7 +252,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "ERROR: Unexpected token <OpenParensToken>, expected <EofToken>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -260,7 +262,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "ERROR: Unexpected token <EofToken>, expected <IdentifierToken>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
 
         [Test]
@@ -270,46 +272,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
 
             var expectedDiagnostic = "The number 124654541321534154153151 isn't valid <System.Int32>";
 
-            AssertHasDiagnostics(text, expectedDiagnostic);
-        }
-
-        private void AssertHasDiagnostics(string text, string diagnosticText)
-        {
-            var annotatedText = AnnotatedText.Parse(text);
-            var syntaxTree = SyntaxTree.Parse(annotatedText.Text);
-            var compilation = new Compilation(syntaxTree);
-            var result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
-            var diagnostics = AnnotatedText.UnindentLines(diagnosticText);
-
-            var annotationsCount = annotatedText.Spans.Length;
-            var actualDiagsCount = result.Diagnostics.Length;
-            if (annotationsCount < actualDiagsCount)
-            {
-                throw new Exception($"Too few markers '[]'. Found {annotationsCount}, expected {actualDiagsCount}");
-            }
-
-            if (annotationsCount > actualDiagsCount)
-            {
-                throw new Exception($"Too many markers '[]'. Found {annotationsCount}, expected {actualDiagsCount}");
-            }
-
-            if (annotationsCount != diagnostics.Length)
-            {
-                throw new Exception($"Inconsisten number of '[]' and expected diagnostics. Found {diagnostics.Length} diagnostics, expected {annotationsCount} based on number of '[]'");
-            }
-
-            for (var i = 0; i < diagnostics.Length; i++)
-            {
-                var expectedDiagnostic = diagnostics[i];
-                var actualDiagnostic = result.Diagnostics[i].Message;
-
-                Assert.That(actualDiagnostic, Is.EqualTo(expectedDiagnostic));
-
-                var expectedSpan = annotatedText.Spans[i];
-                var actualSpan = result.Diagnostics[i].Span;
-
-                Assert.That(expectedSpan, Is.EqualTo(actualSpan));
-            }
+            Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
     }
 }
