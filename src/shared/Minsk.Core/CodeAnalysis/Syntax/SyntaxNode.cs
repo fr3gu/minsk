@@ -96,5 +96,15 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 return writer.ToString();
             }
         }
+
+        public SyntaxToken GetLastToken()
+        {
+            if (this is SyntaxToken token)
+            {
+                return token;
+            }
+
+            return GetChildren().Last().GetLastToken();
+        }
     }
 }
