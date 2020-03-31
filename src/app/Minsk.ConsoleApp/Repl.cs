@@ -323,12 +323,21 @@ namespace Minsk.ConsoleApp
             var start = view.CurrentCharacter;
             if (start >= line.Length)
             {
-                return;
-            }
+                if(view.CurrentLine == document.Count - 1)
+                {
+                    return;
+                }
 
-            var before = line.Substring(0, start);
-            var after = line.Substring(start + 1);
-            document[lineIndex] = before + after;
+                var nextLine = document[view.CurrentLine + 1];
+                document[view.CurrentLine] += nextLine;
+                document.RemoveAt(view.CurrentLine + 1);
+            }
+            else
+            {
+                var before = line.Substring(0, start);
+                var after = line.Substring(start + 1);
+                document[lineIndex] = before + after;
+            }
         }
 
         private void HandleHome(ObservableCollection<string> document, SubmissionView view)
