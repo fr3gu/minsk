@@ -156,7 +156,8 @@ namespace Minsk.Core.CodeAnalysis.Lowering
             //
             // {
             //      var <var> = <lower>
-            //      while <lower> <= <upper>
+            //      let upperBound = <upper>
+            //      while <lower> <= upperBound
             //      {
             //          <body>
             //          <var> = <var> + 1
@@ -167,11 +168,14 @@ namespace Minsk.Core.CodeAnalysis.Lowering
             var variableDeclaration = new BoundVariableDeclarationStatement(node.Variable, node.LowerBound);
 
             var variableExpression = new BoundVariableExpression(node.Variable);
+            var upperBoundSymbol = new VariableSymbol("upperBound", true, typeof(int));
+            var upperBoundDeclaration = new BoundVariableDeclarationStatement(upperBoundSymbol, node.UpperBound);
 
             var condition = new BoundBinaryExpression(
                 variableExpression,
                 BoundBinaryOperator.Bind(SyntaxKind.LessThanOrEqualToken, typeof(int), typeof(int)),
-                node.UpperBound);
+                new BoundVariableExpression(upperBoundSymbol)
+            );
 
             var increment = new BoundExpressionStatement(
                 new BoundAssignmentExpression(
@@ -186,7 +190,10 @@ namespace Minsk.Core.CodeAnalysis.Lowering
 
             var whileBlock = new BoundBlockStatement(ImmutableArray.Create(node.Body, increment));
             var whileStatement = new BoundWhileStatement(condition, whileBlock);
-            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(variableDeclaration, whileStatement));
+            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                variableDeclaration,
+                upperBoundDeclaration,
+                whileStatement));
 
             return RewriteStatement(result);
         }

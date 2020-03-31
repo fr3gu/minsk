@@ -71,6 +71,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         [TestCase("{ var a = 0 while (a < 9) a = a + 1 }", 9)]
         [TestCase("{ var i = 10 var result = 0 while (i > 0) { result = result + i i = i - 1 } result }", 55)]
         [TestCase("{ var result = 0 for i = 1 to 10 { result = result + 1 } result }", 10)]
+        [TestCase("{ var a = 10 for i = 1 to (a = a - 1) { } a }", 9)]
         public void AccuratelyEvaluateExpressions(string text, object expected)
         {
             var expression = SyntaxTree.Parse(text);
