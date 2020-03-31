@@ -160,7 +160,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
                 return node;
             }
 
-            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfFalse);
+            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfTrue);
         }
 
         protected virtual BoundExpression RewriteLiteralExpression(BoundLiteralExpression node)
