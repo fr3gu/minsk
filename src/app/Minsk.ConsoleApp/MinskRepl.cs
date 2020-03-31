@@ -36,10 +36,6 @@ namespace Minsk.ConsoleApp
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                 }
-                else
-                {
-
-                }
 
                 Console.Write(token.Text);
 
@@ -146,7 +142,7 @@ namespace Minsk.ConsoleApp
 
             var syntaxTree = SyntaxTree.Parse(text);
 
-            if (syntaxTree.Diagnostics.Any())
+            if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
             {
                 return false;
             }
