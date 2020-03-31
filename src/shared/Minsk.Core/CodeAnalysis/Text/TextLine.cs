@@ -1,5 +1,8 @@
-﻿namespace Minsk.Core.CodeAnalysis.Text
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Minsk.Core.CodeAnalysis.Text
 {
+    [ExcludeFromCodeCoverage]
     public sealed class TextLine
     {
         public SourceText Text { get; }
