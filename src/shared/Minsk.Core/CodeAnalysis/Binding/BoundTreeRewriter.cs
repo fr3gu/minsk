@@ -21,6 +21,12 @@ namespace Minsk.Core.CodeAnalysis.Binding
                     return RewriteWhileStatement((BoundWhileStatement) node);
                 case BoundNodeKind.ForStatement:
                     return RewriteForStatement((BoundForStatement) node);
+                case BoundNodeKind.GotoStatement:
+                    return RewriteGotoStatement((BoundGotoStatement)node);
+                case BoundNodeKind.LabelStatement:
+                    return RewriteLabelStatement((BoundLabelStatement)node);
+                case BoundNodeKind.ConditionalGotoStatement:
+                    return RewriteConditionalStatement((BoundConditionalGotoStatement)node);
                 default:
                     throw new Exception($"Unexpected node: {node.Kind}");
             }
@@ -134,6 +140,27 @@ namespace Minsk.Core.CodeAnalysis.Binding
             }
 
             return new BoundForStatement(node.Variable, lowerBound, upperBound, body);
+        }
+
+        protected virtual BoundStatement RewriteGotoStatement(BoundGotoStatement node)
+        {
+            return node;
+        }
+
+        protected virtual BoundStatement RewriteLabelStatement(BoundLabelStatement node)
+        {
+            return node;
+        }
+
+        protected virtual BoundStatement RewriteConditionalStatement(BoundConditionalGotoStatement node)
+        {
+            var condition = RewriteExpression(node.Condition);
+            if (condition == node.Condition)
+            {
+                return node;
+            }
+
+            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfFalse);
         }
 
         protected virtual BoundExpression RewriteLiteralExpression(BoundLiteralExpression node)

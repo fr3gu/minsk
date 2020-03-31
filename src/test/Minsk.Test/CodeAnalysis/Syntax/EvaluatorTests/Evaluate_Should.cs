@@ -70,7 +70,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         [TestCase("{ var a = 0 if a == 0 a = 10 else a = 20 }", 10)]
         [TestCase("{ var a = 0 while (a < 9) a = a + 1 }", 9)]
         [TestCase("{ var i = 10 var result = 0 while (i > 0) { result = result + i i = i - 1 } result }", 55)]
-        [TestCase("{ var result = 0 for i = 5 to 15 { result = result + 1 } result }", 11)]
+        [TestCase("{ var result = 0 for i = 1 to 10 { result = result + 1 } result }", 10)]
         public void AccuratelyEvaluateExpressions(string text, object expected)
         {
             var expression = SyntaxTree.Parse(text);

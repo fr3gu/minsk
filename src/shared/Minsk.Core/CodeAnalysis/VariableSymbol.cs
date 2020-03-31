@@ -14,5 +14,7 @@ namespace Minsk.Core.CodeAnalysis
             IsReadonly = isReadonly;
             Type = type;
         }
+
+        public override string ToString() => Name;
     }
 }
