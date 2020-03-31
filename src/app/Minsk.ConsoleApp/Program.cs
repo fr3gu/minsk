@@ -77,9 +77,6 @@ namespace Minsk.ConsoleApp
                 }
 
                 var compilation = previous == null ? new Compilation(syntaxTree) : previous.ContinueWith(syntaxTree);
-                var result = compilation.Evaluate(variables);
-
-                var diagnostics = result.Diagnostics.ToArray();
 
                 var color = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -87,6 +84,10 @@ namespace Minsk.ConsoleApp
                 if(showTree) syntaxTree.Root.WriteTo(Console.Out);
 
                 if (showProgram) compilation.EmitTree(Console.Out);
+
+                var result = compilation.Evaluate(variables);
+
+                var diagnostics = result.Diagnostics.ToArray();
 
                 Console.ForegroundColor = color;
 
