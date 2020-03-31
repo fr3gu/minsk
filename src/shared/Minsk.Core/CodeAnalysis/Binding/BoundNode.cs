@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -7,6 +8,7 @@ using System.Reflection;
 
 namespace Minsk.Core.CodeAnalysis.Binding
 {
+    [ExcludeFromCodeCoverage]
     internal abstract class BoundNode
     {
         public abstract BoundNodeKind Kind { get;}
@@ -38,6 +40,28 @@ namespace Minsk.Core.CodeAnalysis.Binding
         public void WriteTo(TextWriter writer)
         {
             PrettyPrint(writer, this);
+        }
+
+        public override string ToString()
+        {
+            using var writer = new StringWriter();
+
+            WriteTo(writer);
+
+            return writer.ToString();
+        }
+
+        private static ConsoleColor GetColor(BoundNode node)
+        {
+            switch (node)
+            {
+                case BoundExpression _:
+                    return ConsoleColor.Blue;
+                case BoundStatement _:
+                    return ConsoleColor.Cyan;
+                default:
+                    return ConsoleColor.DarkYellow;
+            }
         }
 
         private static void PrettyPrint(TextWriter writer, BoundNode node, string indent = "", bool isLast = true)
@@ -106,19 +130,6 @@ namespace Minsk.Core.CodeAnalysis.Binding
             }
         }
 
-        private static ConsoleColor GetColor(BoundNode node)
-        {
-            switch (node)
-            {
-                case BoundExpression _:
-                    return ConsoleColor.Blue;
-                case BoundStatement _:
-                    return ConsoleColor.Cyan;
-                default:
-                    return ConsoleColor.DarkYellow;
-            }
-        }
-
         private static string GetText(BoundNode node)
         {
             switch (node)
@@ -129,16 +140,6 @@ namespace Minsk.Core.CodeAnalysis.Binding
                     return $"{u.Op.Kind}Expression";
                 default:
                     return node.Kind.ToString();
-            }
-        }
-
-        public override string ToString()
-        {
-            using (var writer = new StringWriter())
-            {
-                WriteTo(writer);
-
-                return writer.ToString();
             }
         }
 
