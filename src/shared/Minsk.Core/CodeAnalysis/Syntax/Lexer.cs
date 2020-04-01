@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using Minsk.Core.CodeAnalysis.Symbols;
 using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.Core.CodeAnalysis.Syntax
@@ -264,7 +265,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
             if (!int.TryParse(text, out var value))
             {
-                Diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, typeof(int));
+                Diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, TypeSymbol.Int);
             }
 
             _kind = SyntaxKind.NumberToken;

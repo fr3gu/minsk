@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Minsk.Core.CodeAnalysis.Symbols;
 using Minsk.Core.CodeAnalysis.Syntax;
 using Minsk.Core.CodeAnalysis.Text;
 
@@ -19,7 +20,7 @@ namespace Minsk.Core.CodeAnalysis
             _diagnostics.Add(new Diagnostic(span, message));
         }
 
-        public void ReportInvalidNumber(TextSpan span, string text, Type type)
+        public void ReportInvalidNumber(TextSpan span, string text, TypeSymbol type)
         {
             Report(span, $"The number {text} isn't valid <{type}>");
         }
@@ -48,13 +49,13 @@ namespace Minsk.Core.CodeAnalysis
 
         }
 
-        public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
+        public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
         {
             var message = $"Unary operator '{operatorText}' is not defined for type <{operandType}>";
             Report(span, message);
         }
 
-        public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftOperandType, Type rightOperandType)
+        public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, TypeSymbol leftOperandType, TypeSymbol rightOperandType)
         {
             var message = $"Binary operator '{operatorText}' is not defined for type <{leftOperandType}> and <{rightOperandType}>";
             Report(span, message);
@@ -66,7 +67,7 @@ namespace Minsk.Core.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
+        public void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
         {
             var message = $"Cannot convert from <{fromType}> to <{toType}>";
             Report(span, message);

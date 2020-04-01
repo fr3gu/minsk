@@ -13,7 +13,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
 
 
         public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpression;
-        public override Type Type => Expression.Type;
+        public override TypeSymbol Type => Expression.Type;
         public VariableSymbol Symbol { get; }
         public BoundExpression Expression { get; }
     }

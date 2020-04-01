@@ -155,7 +155,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             }
             ";
 
-            var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
+            var expectedDiagnostic = "Cannot convert from <bool> to <int>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
@@ -171,7 +171,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             }
             ";
 
-            var expectedDiagnostic = "Cannot convert from <System.Int32> to <System.Boolean>";
+            var expectedDiagnostic = "Cannot convert from <int> to <bool>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
@@ -188,7 +188,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             }
             ";
 
-            var expectedDiagnostic = "Cannot convert from <System.Int32> to <System.Boolean>";
+            var expectedDiagnostic = "Cannot convert from <int> to <bool>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
@@ -205,7 +205,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             }
             ";
 
-            var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
+            var expectedDiagnostic = "Cannot convert from <bool> to <int>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
@@ -222,7 +222,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
             }
             ";
 
-            var expectedDiagnostic = "Cannot convert from <System.Boolean> to <System.Int32>";
+            var expectedDiagnostic = "Cannot convert from <bool> to <int>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
@@ -232,7 +232,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         {
             var text = @"[+]true";
 
-            var expectedDiagnostic = "Unary operator '+' is not defined for type <System.Boolean>";
+            var expectedDiagnostic = "Unary operator '+' is not defined for type <bool>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
@@ -242,7 +242,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         {
             var text = @"1 [&&] true";
 
-            var expectedDiagnostic = "Binary operator '&&' is not defined for type <System.Int32> and <System.Boolean>";
+            var expectedDiagnostic = "Binary operator '&&' is not defined for type <int> and <bool>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
@@ -272,7 +272,7 @@ namespace Minsk.Test.CodeAnalysis.Syntax.EvaluatorTests
         {
             var text = @"var a = [124654541321534154153151]";
 
-            var expectedDiagnostic = "The number 124654541321534154153151 isn't valid <System.Int32>";
+            var expectedDiagnostic = "The number 124654541321534154153151 isn't valid <int>";
 
             Assert.That(text, Has.Diagnostics(expectedDiagnostic));
         }
