@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Minsk.Core.CodeAnalysis.Binding;
+using Minsk.Core.CodeAnalysis.Symbols;
 using Minsk.Core.CodeAnalysis.Syntax;
 
 namespace Minsk.Core.CodeAnalysis.Lowering
@@ -14,10 +15,10 @@ namespace Minsk.Core.CodeAnalysis.Lowering
             _labelCount = 0;
         }
 
-        private LabelSymbol GenerateLabel()
+        private BoundLabel GenerateLabel()
         {
             var name = $"Label{++_labelCount}";
-            return new LabelSymbol(name);
+            return new BoundLabel(name);
         }
 
         public static BoundBlockStatement Lower(BoundStatement statement)
@@ -168,12 +169,12 @@ namespace Minsk.Core.CodeAnalysis.Lowering
             var variableDeclaration = new BoundVariableDeclarationStatement(node.Variable, node.LowerBound);
 
             var variableExpression = new BoundVariableExpression(node.Variable);
-            var upperBoundSymbol = new VariableSymbol("upperBound", true, typeof(int));
+            var upperBoundSymbol = new VariableSymbol("upperBound", true, TypeSymbol.Int);
             var upperBoundDeclaration = new BoundVariableDeclarationStatement(upperBoundSymbol, node.UpperBound);
 
             var condition = new BoundBinaryExpression(
                 variableExpression,
-                BoundBinaryOperator.Bind(SyntaxKind.LessThanOrEqualToken, typeof(int), typeof(int)),
+                BoundBinaryOperator.Bind(SyntaxKind.LessThanOrEqualToken, TypeSymbol.Int, TypeSymbol.Int),
                 new BoundVariableExpression(upperBoundSymbol)
             );
 
@@ -182,7 +183,7 @@ namespace Minsk.Core.CodeAnalysis.Lowering
                     node.Variable,
                     new BoundBinaryExpression(
                         variableExpression,
-                        BoundBinaryOperator.Bind(SyntaxKind.PlusToken, typeof(int), typeof(int)),
+                        BoundBinaryOperator.Bind(SyntaxKind.PlusToken, TypeSymbol.Int, TypeSymbol.Int),
                         new BoundLiteralExpression(1)
                     )
                 )

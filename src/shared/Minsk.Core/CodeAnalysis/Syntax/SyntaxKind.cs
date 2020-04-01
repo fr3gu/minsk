@@ -7,6 +7,7 @@
         EofToken,
         WhitespaceToken,
         NumberToken,
+        StringToken,
         PlusToken,
         MinusToken,
         StarToken,

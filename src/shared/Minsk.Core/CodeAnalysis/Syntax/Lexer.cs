@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
+using Minsk.Core.CodeAnalysis.Symbols;
 using Minsk.Core.CodeAnalysis.Text;
 
 namespace Minsk.Core.CodeAnalysis.Syntax
@@ -21,6 +23,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
         public DiagnosticsBag Diagnostics { get; }
 
         private char Current => Peek(0);
+        private char LookAhead => Peek(1);
 
         private char Peek(int offset)
         {
@@ -167,6 +170,9 @@ namespace Minsk.Core.CodeAnalysis.Syntax
                 case '9':
                     ReadNumberToken();
                     break;
+                case '"':
+                    ReadString();
+                    break;
                 case ' ':
                 case '\t':
                 case '\n':
@@ -196,6 +202,47 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             return new SyntaxToken(_kind, _start, text, _value);
         }
 
+        private void ReadString()
+        {
+            // Skip the starting quote
+            _position++;
+            var sb = new StringBuilder();
+            var done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                    case '\r':
+                    case '\n':
+                        var span = new TextSpan(_start, 1);
+                        Diagnostics.ReportUnterminatedString(span);
+                        done = true;
+                        break;
+                    case '"':
+                        if (LookAhead == '"')
+                        {
+                            sb.Append(Current);
+                            _position += 2;
+                        }
+                        else
+                        {
+                            _position++;
+                            done = true;
+                        }
+                        break;
+                    default:
+                        sb.Append(Current);
+                        _position++;
+                        break;
+                }
+            }
+
+            _kind = SyntaxKind.StringToken;
+            _value = sb.ToString();
+        }
+
         private void ReadWhiteSpace()
         {
             while (char.IsWhiteSpace(Current))
@@ -218,7 +265,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
 
             if (!int.TryParse(text, out var value))
             {
-                Diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, typeof(int));
+                Diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, TypeSymbol.Int);
             }
 
             _kind = SyntaxKind.NumberToken;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Minsk.Core.CodeAnalysis.Symbols;
 
 namespace Minsk.Core.CodeAnalysis.Binding
 {
@@ -10,7 +11,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
         }
 
         public override BoundNodeKind Kind => BoundNodeKind.VariableExpression;
-        public override Type Type => Variable.Type;
+        public override TypeSymbol Type => Variable.Type;
         public VariableSymbol Variable { get; }
     }
 }

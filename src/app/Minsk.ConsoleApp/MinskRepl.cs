@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Minsk.Core.CodeAnalysis;
+using Minsk.Core.CodeAnalysis.Symbols;
 using Minsk.Core.CodeAnalysis.Syntax;
 using Minsk.Core.CodeAnalysis.Text;
 
@@ -142,6 +143,12 @@ namespace Minsk.ConsoleApp
         protected override bool IsCompleteSubmission(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
+                return true;
+            }
+
+            var lastTwoLinesAreBlank = text.Split(Environment.NewLine).Reverse().TakeWhile(s => string.IsNullOrEmpty(s)).Take(2).Count() == 2;
+            if (lastTwoLinesAreBlank)
             {
                 return true;
             }

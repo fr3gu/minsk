@@ -1,4 +1,6 @@
-﻿namespace Minsk.Core.CodeAnalysis.Binding
+﻿using Minsk.Core.CodeAnalysis.Symbols;
+
+namespace Minsk.Core.CodeAnalysis.Binding
 {
     internal class BoundForStatement : BoundStatement
     {

@@ -46,9 +46,16 @@ namespace Minsk.Core.CodeAnalysis.Binding
                     return RewriteUnaryExpression((BoundUnaryExpression)node);
                 case BoundNodeKind.BinaryExpression:
                     return RewriteBinaryExpression((BoundBinaryExpression)node);
+                case BoundNodeKind.ErrorExpression:
+                    return RewriteErrorExpression((BoundErrorExpression)node);
                 default:
                     throw new Exception($"Unexpected node: {node.Kind}");
             }
+        }
+
+        private BoundExpression RewriteErrorExpression(BoundErrorExpression node)
+        {
+            return node;
         }
 
         protected virtual BoundStatement RewriteBlockStatement(BoundBlockStatement node)
@@ -160,7 +167,7 @@ namespace Minsk.Core.CodeAnalysis.Binding
                 return node;
             }
 
-            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfTrue);
+            return new BoundConditionalGotoStatement(node.BoundLabel, condition, node.JumpIfTrue);
         }
 
         protected virtual BoundExpression RewriteLiteralExpression(BoundLiteralExpression node)

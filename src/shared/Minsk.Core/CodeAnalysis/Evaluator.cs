@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Minsk.Core.CodeAnalysis.Binding;
+using Minsk.Core.CodeAnalysis.Symbols;
 
 namespace Minsk.Core.CodeAnalysis
 {
@@ -19,13 +20,13 @@ namespace Minsk.Core.CodeAnalysis
 
         public object Evaluate()
         {
-            var instructions = new Dictionary<LabelSymbol, int>();
+            var instructions = new Dictionary<BoundLabel, int>();
 
             for (var i = 0; i < _root.Statements.Length; i++)
             {
                 if (_root.Statements[i] is BoundLabelStatement l)
                 {
-                    instructions.Add(l.Label, i + 1);
+                    instructions.Add(l.BoundLabel, i + 1);
                 }
             }
 
@@ -48,14 +49,14 @@ namespace Minsk.Core.CodeAnalysis
                     case BoundNodeKind.GotoStatement:
                         var gs = (BoundGotoStatement) s;
 
-                        index = instructions[gs.Label];
+                        index = instructions[gs.BoundLabel];
                         break;
                     case BoundNodeKind.ConditionalGotoStatement:
                         var cgs = (BoundConditionalGotoStatement) s;
                         var condition = (bool) EvaluateExpression(cgs.Condition);
                         if(condition == cgs.JumpIfTrue)
                         {
-                            index = instructions[cgs.Label];
+                            index = instructions[cgs.BoundLabel];
                         }
                         else
                         {
@@ -161,7 +162,7 @@ namespace Minsk.Core.CodeAnalysis
                     return (int) left / (int) right;
 
                 case BoundBinaryOperatorKind.BitwiseAnd:
-                    if (b.Type == typeof(int))
+                    if (b.Type == TypeSymbol.Int)
                     {
                         return (int)left & (int)right;
                     }
@@ -170,7 +171,7 @@ namespace Minsk.Core.CodeAnalysis
                         return (bool)left & (bool)right;
                     }
                 case BoundBinaryOperatorKind.BitwiseOr:
-                    if (b.Type == typeof(int))
+                    if (b.Type == TypeSymbol.Int)
                     {
                         return (int)left | (int)right;
                     }
@@ -179,7 +180,7 @@ namespace Minsk.Core.CodeAnalysis
                         return (bool)left | (bool)right;
                     }
                 case BoundBinaryOperatorKind.BitwiseXOr:
-                    if (b.Type == typeof(int))
+                    if (b.Type == TypeSymbol.Int)
                     {
                         return (int)left ^ (int)right;
                     }
