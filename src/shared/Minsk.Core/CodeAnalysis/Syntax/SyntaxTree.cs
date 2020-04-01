@@ -64,6 +64,7 @@ namespace Minsk.Core.CodeAnalysis.Syntax
             }
 
             var l = new Lexer(text);
+
             var result = LexTokens(l).ToImmutableArray();
             diagnostics = l.Diagnostics.ToImmutableArray();
 

@@ -17,4 +17,10 @@ namespace Minsk.Core.CodeAnalysis.Binding
         public VariableSymbol Symbol { get; }
         public BoundExpression Expression { get; }
     }
+
+    internal sealed class BoundErrorExpression : BoundExpression
+    {
+        public override BoundNodeKind Kind => BoundNodeKind.ErrorExpression;
+        public override TypeSymbol Type => TypeSymbol.Error;
+    }
 }
