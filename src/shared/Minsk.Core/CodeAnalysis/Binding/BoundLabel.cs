@@ -1,10 +1,10 @@
-﻿namespace Minsk.Core.CodeAnalysis
+﻿namespace Minsk.Core.CodeAnalysis.Binding
 {
-    internal sealed class LabelSymbol
+    internal sealed class BoundLabel
     {
         public string Name { get; }
 
-        public LabelSymbol(string name)
+        public BoundLabel(string name)
         {
             Name = name;
         }

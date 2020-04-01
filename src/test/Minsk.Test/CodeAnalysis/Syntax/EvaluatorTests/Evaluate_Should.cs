@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Minsk.Core.CodeAnalysis;
+using Minsk.Core.CodeAnalysis.Symbols;
 using Minsk.Core.CodeAnalysis.Syntax;
 using Minsk.Test.NUnit;
 using NUnit.Framework;

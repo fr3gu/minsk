@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Minsk.Core.CodeAnalysis.Binding;
+using Minsk.Core.CodeAnalysis.Symbols;
 using Minsk.Core.CodeAnalysis.Syntax;
 
 namespace Minsk.Core.CodeAnalysis.Lowering
@@ -14,10 +15,10 @@ namespace Minsk.Core.CodeAnalysis.Lowering
             _labelCount = 0;
         }
 
-        private LabelSymbol GenerateLabel()
+        private BoundLabel GenerateLabel()
         {
             var name = $"Label{++_labelCount}";
-            return new LabelSymbol(name);
+            return new BoundLabel(name);
         }
 
         public static BoundBlockStatement Lower(BoundStatement statement)
