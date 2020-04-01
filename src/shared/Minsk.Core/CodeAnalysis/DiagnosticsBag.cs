@@ -30,6 +30,12 @@ namespace Minsk.Core.CodeAnalysis
             Report(new TextSpan(position, 1), message);
         }
 
+        public void ReportUnterminatedString(TextSpan span)
+        {
+            var message = $"Unterminated string literal.";
+            Report(span, message);
+        }
+
         public void AddRange(DiagnosticsBag diagnostics)
         {
             _diagnostics.AddRange(diagnostics);
